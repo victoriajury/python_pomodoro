@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from gui import SettingSlider, TaskList, TomatoTimer
+from .gui import SettingSlider, TaskList, TomatoTimer
 
 """
 Main entry point application.
