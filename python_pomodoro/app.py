@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Tk, ttk
 
 from .gui import SettingSlider, TaskList, TomatoTimer
 
@@ -11,7 +11,7 @@ necessary modules (e.g., GUI, timer, tasks)
 
 
 class Pomodoro:
-    def __init__(self, main_window) -> None:
+    def __init__(self, main_window: Tk) -> None:
         main_window.title("Pomodoro")
         main_window.minsize(600, 550)
         main_window.maxsize(600, 550)

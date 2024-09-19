@@ -15,7 +15,7 @@ def get_image_from_resources(img_file_name: str) -> str:
 
 
 class TomatoTimer(ttk.Frame):
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: ttk.Frame) -> None:
         ttk.Frame.__init__(self, parent)
 
         self.bg_image = PhotoImage(file=get_image_from_resources("tomato_timer_bg.png"))
@@ -37,7 +37,7 @@ class TomatoTimer(ttk.Frame):
 
 
 class TaskList(ttk.Frame):
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: ttk.Frame) -> None:
         ttk.Frame.__init__(self, parent)
         self.configure(border=1, borderwidth=1, relief="sunken", padding=10)
 
@@ -56,7 +56,7 @@ class TaskList(ttk.Frame):
 
 
 class SettingSlider(ttk.Frame):
-    def __init__(self, parent, label_text, min_value, max_value) -> None:
+    def __init__(self, parent: ttk.Frame, label_text: str, min_value: int, max_value: int) -> None:
         ttk.Frame.__init__(self, parent)
 
         label1 = ttk.Label(self, text=label_text)
