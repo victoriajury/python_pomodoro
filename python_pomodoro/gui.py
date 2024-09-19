@@ -8,14 +8,14 @@ task checklists, and component layouts
 """
 
 
-def get_image_from_resources(img_file_name):
+def get_image_from_resources(img_file_name: str) -> str:
     images_dir = pathlib.Path("resources/images/").resolve()
     img_path = os.path.join(images_dir, img_file_name)
     return img_path
 
 
 class TomatoTimer(ttk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent) -> None:
         ttk.Frame.__init__(self, parent)
 
         self.bg_image = PhotoImage(file=get_image_from_resources("tomato_timer_bg.png"))
@@ -37,7 +37,7 @@ class TomatoTimer(ttk.Frame):
 
 
 class TaskList(ttk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent) -> None:
         ttk.Frame.__init__(self, parent)
         self.configure(border=1, borderwidth=1, relief="sunken", padding=10)
 
@@ -56,7 +56,7 @@ class TaskList(ttk.Frame):
 
 
 class SettingSlider(ttk.Frame):
-    def __init__(self, parent, label_text, min_value, max_value):
+    def __init__(self, parent, label_text, min_value, max_value) -> None:
         ttk.Frame.__init__(self, parent)
 
         label1 = ttk.Label(self, text=label_text)

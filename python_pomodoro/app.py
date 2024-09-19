@@ -46,7 +46,7 @@ class Pomodoro:
         settings_button.grid(row=2, column=0, columnspan=2)
 
 
-def main():
+def main() -> None:
     root = tk.Tk()
     _ = Pomodoro(root)
     root.mainloop()
