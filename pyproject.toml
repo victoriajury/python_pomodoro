@@ -1,0 +1,20 @@
+[project]
+name = "python_pomodoro"
+version = "1.0.0"
+description = "A Pomodoro Timer Application using Python and Tkinter."
+readme = "README.md"
+dependencies = []
+
+[build-system]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["python_pomodoro"]
+
+[tool.coverage.report]
+exclude_also = [
+    'if __name__ == "__main__":'
+    ]
