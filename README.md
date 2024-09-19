@@ -24,13 +24,72 @@ More details on how the UI will work:
 
 ![Image](https://github.com/user-attachments/assets/98d5a6dc-b0bf-45d1-8ee7-ecf9e64a0581)
 
+## Project set up
+
+**My local environment is installed on a Fedora Linux laptop.**
+
+### Dependencies:
+- Python 3.11+
+- pip
+- pipenv
+- tkinter
+
+Check Python version:
+```
+$ python --version
+Python 3.12.5
+```
+
+### Install tkinter on Fedora Linux
+https://www.geeksforgeeks.org/how-to-install-tkinter-on-linux/
+
+For Fedora users, use the following command:
+```
+sudo dnf install python3-tkinter
+```
+Verify installation: a pop-up window opened with two buttons appears, showing the current version of Tkinter installed.
+```
+python -m tkinter
+```
+
+### Install pip on Fedora Linux
+https://packaging.python.org/en/latest/guides/installing-using-linux-tools/
+
+```
+$ sudo dnf install python3-pip python3-wheel
+
+$ pip --version
+pip 23.2.1
+```
+
+### Install pipenv 
+https://pipenv.pypa.io/en/latest/index.html
+
+**Rationale:** [Poetry](https://python-poetry.org/) is another Python virtual environment and dependency management tool, however this project is not very big or particularly complex and has minimal dependencies, therefore I have opted to use Pipenv, which I am more familiar with.
+
+```
+$ pip install pipenv --user
+
+$ pipenv --version
+pipenv, version 2024.0.1
+```
+
+Create and activate the virtual environment and spawn a shell within it
+```
+pipenv shell
+```
+Install packages
+```
+pipenv install [OPTIONS] [PACKAGES]...
+```
+
 ## Resources
 
-#### Further information:
+### Further information:
 - https://www.pomodorotechnique.com/
 - https://en.wikipedia.org/wiki/Pomodoro_Technique
 
-#### Other similar applications:
+### Other similar applications:
 Here are a few Pomodoro apps which I've used for inspiration:
 
 - https://pomofocus.io/
