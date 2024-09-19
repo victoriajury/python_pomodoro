@@ -1,17 +1,11 @@
-import os
-import pathlib
 from tkinter import PhotoImage, ttk
+
+from .helpers import get_image_from_resources
 
 """
 Handles all the user interface components like buttons, sliders,
 task checklists, and component layouts
 """
-
-
-def get_image_from_resources(img_file_name: str) -> str:
-    images_dir = pathlib.Path("resources/images/").resolve()
-    img_path = os.path.join(images_dir, img_file_name)
-    return img_path
 
 
 class TomatoTimer(ttk.Frame):
