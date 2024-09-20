@@ -57,6 +57,7 @@ class TomatoTimer(ttk.Frame):
         self.is_paused = False  # restart timer
         self.button_start.grid_forget()
 
+        # TODO: change this to use  Tkinter.after() - update and sleep cause lag when pressing pause
         while self.current_time > -1 and self.is_paused is not True:
             # divmod(firstvalue = temp//60, secondvalue = temp%60)
             mins, secs = divmod(self.current_time, 60)
