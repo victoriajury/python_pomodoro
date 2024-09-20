@@ -20,7 +20,7 @@ class Pomodoro:
         container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
         container.pack(side="top", fill="both", expand=True)
 
-        timer = TomatoTimer(container)
+        timer = TomatoTimer(container, main_window)
         timer.pack(side="left", fill="y")
 
         tasks = TaskList(container)
@@ -49,6 +49,12 @@ class Pomodoro:
 def main() -> None:
     root = tk.Tk()
     _ = Pomodoro(root)
+
+    styles = ttk.Style()
+    styles.configure("TimerImage.TLabel", foreground="#ffc9c9", font=("", 40, "bold"), justify="center")
+    styles.configure(
+        "TimerText.TLabel", background="#f55453", foreground="#ffc9c9", font=("", 45, "bold"), justify="center"
+    )
     root.mainloop()
 
 
