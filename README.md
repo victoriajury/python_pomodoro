@@ -1,7 +1,13 @@
-# python_pomodoro
+# WIP: python_pomodoro
 A Pomodoro Timer Application using Python and Tkinter.
 
 This project aims to develop my skills in: OOP, event-driven programming, UI/UX design, testing and validation, software deployment.
+
+### Usage
+To run the application from a terminal
+```
+python -m python_pomodoro.app
+```
 
 ###  What is the Pomodoro technique?
 
@@ -82,13 +88,6 @@ Install packages
 ```
 pipenv install [OPTIONS] [PACKAGES]...
 ```
-
-### Usage
-To run the application from a terminal:
-```
-python -m python_pomodoro.app
-```
-
 
 ### Run the tests
 
