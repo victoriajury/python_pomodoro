@@ -10,7 +10,7 @@ task checklists, and component layouts
 """
 
 
-class Status(Enum):
+class SessionStatus(Enum):
     FOCUS = {
         "title": "Focus",
         "default_time": [25, 00],
@@ -49,20 +49,20 @@ class TomatoTimer(ttk.Frame):
         self.main_window = main_window
 
         self.is_paused = False
-        self.is_reset = False
         self.minutes = StringVar()
         self.seconds = StringVar()
 
         # STATUS
         # one of three session statuses: focus, short_break, long_break
-        self.status = Status.FOCUS
+        self.status = SessionStatus.FOCUS
 
         # APPEARANCE & STYLES
         self.bg_images = {
-            status: PhotoImage(file=get_image_from_resources(str(status.value["image"]))) for status in Status
+            status: PhotoImage(file=get_image_from_resources(str(status.value["image"]))) for status in SessionStatus
         }
         self.bg_images_paused = {
-            status: PhotoImage(file=get_image_from_resources(str(status.value["image_paused"]))) for status in Status
+            status: PhotoImage(file=get_image_from_resources(str(status.value["image_paused"])))
+            for status in SessionStatus
         }
         self.styles = ttk.Style(self)
         self.styles.configure("TimerImage.TLabel", font=("", 40, "bold"), justify="center")
@@ -71,6 +71,7 @@ class TomatoTimer(ttk.Frame):
             font=("", 45, "bold"),
             justify="center",
         )
+        self.styles.configure("OptionMenu.TMenubutton", width=16)
 
         self.timer_background = ttk.Label(
             # contains background tomato image and colon seperator ie M:S
@@ -98,7 +99,19 @@ class TomatoTimer(ttk.Frame):
         self.button_start = ttk.Button(self, text="Start", command=self.start_timer)
         self.show_start_button()
 
-        # self.select_session = ttk.OptionMenu(self)
+        session_status_list = [str(status.value["title"]) for status in list(SessionStatus)]
+        self.list_selection = StringVar()
+        self.list_selection.set(session_status_list[0])
+        self.select_session = ttk.OptionMenu(
+            self,
+            self.list_selection,
+            str(SessionStatus.FOCUS.value["title"]),
+            *session_status_list,
+            command=lambda x: self.change_session_status(x),
+            style="OptionMenu.TMenubutton",
+            direction="above"
+        )
+        self.select_session.grid(row=2, column=0, columnspan=2, pady=10)
 
         self.set_session_time()
         self.set_styles()
@@ -111,13 +124,13 @@ class TomatoTimer(ttk.Frame):
         self.seconds.set("{0:02}".format(secs))
         self.current_time = int(self.minutes.get()) * 60 + int(self.seconds.get())
 
-    def set_styles(self):
-        if self.is_paused and not self.is_reset:
+    def set_styles(self, reset: bool = False) -> None:
+        if self.is_paused and reset is False:
             self.timer_background.configure(image=self.bg_images_paused[self.status])
         else:
             self.timer_background.configure(image=self.bg_images[self.status])
 
-        paused = "_paused" if self.is_paused and not self.is_reset else ""
+        paused = "_paused" if self.is_paused and reset is False else ""
         self.styles.configure("TimerImage.TLabel", foreground=self.status.value[f"foreground{paused}"])
         self.styles.configure(
             "TimerText.TLabel",
@@ -160,19 +173,29 @@ class TomatoTimer(ttk.Frame):
 
     def reset_timer(self) -> None:
         self.is_paused = True
-        self.is_reset = True
         self.show_start_button()
         self.set_session_time()
-        self.set_styles()
-        self.main_window.title("Pomodoro")
-        self.is_reset = False
+        self.set_styles(reset=True)
+        self.main_window.title(f"Pomodoro - {self.status.value["title"]}")
 
     def start_next_session(self) -> None:
-        self.status = Status.SHORT_BREAK  # TODO: Temporary status change while developing timer, need to automate this.
+        self.status = (
+            SessionStatus.SHORT_BREAK
+        )  # TODO: Temporary status change while developing timer, need to automate this.
         self.main_window.title(f"Pomodoro - Start {self.status.value["title"]}")
         self.show_start_button()
         self.set_session_time()
-        self.set_styles()
+        self.set_styles(reset=True)
+
+    def change_session_status(self, status_var: StringVar) -> None:
+        self.is_paused = True
+        for status in list(SessionStatus):
+            if status_var == status.value["title"]:
+                self.status = status
+        self.main_window.title(f"Pomodoro - Start {self.status.value["title"]}")
+        self.show_start_button()
+        self.set_session_time()
+        self.set_styles(reset=True)
 
 
 class TaskList(ttk.Frame):
