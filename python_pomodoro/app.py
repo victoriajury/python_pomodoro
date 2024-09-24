@@ -49,12 +49,6 @@ class Pomodoro:
 def main() -> None:
     root = tk.Tk()
     _ = Pomodoro(root)
-
-    styles = ttk.Style()
-    styles.configure("TimerImage.TLabel", foreground="#ffc9c9", font=("", 40, "bold"), justify="center")
-    styles.configure(
-        "TimerText.TLabel", background="#f55453", foreground="#ffc9c9", font=("", 45, "bold"), justify="center"
-    )
     root.mainloop()
 
 
