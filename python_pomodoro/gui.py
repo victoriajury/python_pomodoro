@@ -56,10 +56,10 @@ class TomatoTimer(ttk.Frame):
         self.status = SessionStatus.FOCUS
 
         # APPEARANCE & STYLES
-        self.bg_images = {
+        self.bg_images: dict[SessionStatus, PhotoImage] = {
             status: PhotoImage(file=get_image_from_resources(str(status.value["image"]))) for status in SessionStatus
         }
-        self.bg_images_paused = {
+        self.bg_images_paused: dict[SessionStatus, PhotoImage] = {
             status: PhotoImage(file=get_image_from_resources(str(status.value["image_paused"])))
             for status in SessionStatus
         }
@@ -99,7 +99,7 @@ class TomatoTimer(ttk.Frame):
         self.button_start = ttk.Button(self, text="Start", command=self.start_timer)
         self.show_start_button()
 
-        session_status_list = [str(status.value["title"]) for status in list(SessionStatus)]
+        session_status_list: list[str] = [str(status.value["title"]) for status in list(SessionStatus)]
         self.list_selection = StringVar()
         self.list_selection.set(session_status_list[0])
         self.option_menu_session_status = ttk.OptionMenu(
