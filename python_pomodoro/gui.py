@@ -9,11 +9,13 @@ Handles all the user interface components like buttons, sliders,
 task checklists, and component layouts
 """
 
+DEFAULT_CYCLES = 4
+
 
 class SessionStatus(Enum):
     FOCUS = {
         "title": "Focus",
-        "default_time": [25, 00],
+        "default_time": [25, 0],
         "image": "tomato_red_bg.png",
         "image_paused": "tomato_red_dark_bg.png",
         "foreground": "#ffc9c9",
@@ -48,12 +50,12 @@ class TomatoTimer(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         self.main_window = main_window
 
+        # DEFAULT STATUS
+        self.status = SessionStatus.FOCUS
         self.is_paused = False
         self.minutes = StringVar()
         self.seconds = StringVar()
-
-        # DEFAULT STATUS
-        self.status = SessionStatus.FOCUS
+        self.current_cycle = 1
 
         # APPEARANCE & STYLES
         self.bg_images: dict[SessionStatus, PhotoImage] = {
@@ -90,6 +92,9 @@ class TomatoTimer(ttk.Frame):
         timer_seconds = ttk.Label(self, textvariable=self.seconds, style="TimerText.TLabel")
         timer_seconds.grid(row=0, column=1, sticky="w", padx=10)
 
+        self.label_cycles = ttk.Label(self, text=f"Cycle: {self.current_cycle} of {DEFAULT_CYCLES}")
+        self.label_cycles.grid(row=0, column=0, columnspan=2, sticky="s", pady=10)
+
         self.button_reset = ttk.Button(self, text="Reset", command=self.reset_timer)
         self.button_reset.grid(row=1, column=0, sticky="e", padx=5)
 
@@ -116,6 +121,9 @@ class TomatoTimer(ttk.Frame):
         self.set_session_time()
         self.set_styles()
 
+    def show_start_button(self) -> None:
+        self.button_start.grid(row=1, column=1, sticky="w", padx=5)
+
     def set_session_time(self) -> None:
         # set session time and pad with zeros
         mins = int(self.status.value["default_time"][0].__str__())
@@ -137,9 +145,6 @@ class TomatoTimer(ttk.Frame):
             background=self.status.value[f"background{paused}"],
             foreground=self.status.value[f"foreground{paused}"],
         )
-
-    def show_start_button(self) -> None:
-        self.button_start.grid(row=1, column=1, sticky="w", padx=5)
 
     def start_timer(self) -> None:
         self.is_paused = False  # restart timer
@@ -179,9 +184,17 @@ class TomatoTimer(ttk.Frame):
         self.main_window.title(f"Pomodoro - {self.status.value["title"]}")
 
     def start_next_session(self) -> None:
-        self.status = (
-            SessionStatus.SHORT_BREAK
-        )  # TODO: Temporary status change while developing timer, need to automate this.
+        if self.status in [SessionStatus.SHORT_BREAK, SessionStatus.LONG_BREAK]:
+            # Start another focus session after a break
+            self.status = SessionStatus.FOCUS
+            # Increment then reset cycles
+            self.current_cycle = self.current_cycle + 1 if self.current_cycle < DEFAULT_CYCLES else 1
+        elif self.current_cycle == DEFAULT_CYCLES:
+            # Start a long break
+            self.status = SessionStatus.LONG_BREAK
+        else:
+            self.status = SessionStatus.SHORT_BREAK
+        self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {DEFAULT_CYCLES}")
         self.main_window.title(f"Pomodoro - Start {self.status.value["title"]}")
         self.show_start_button()
         self.set_session_time()
