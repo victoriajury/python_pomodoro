@@ -1,6 +1,6 @@
 import time
 from enum import Enum
-from tkinter import PhotoImage, StringVar, ttk
+from tkinter import PhotoImage, StringVar, Tk, ttk
 
 from .helpers import get_image_from_resources
 
@@ -44,7 +44,7 @@ class SessionStatus(Enum):
 
 
 class TomatoTimer(ttk.Frame):
-    def __init__(self, parent: ttk.Frame, main_window) -> None:
+    def __init__(self, parent: ttk.Frame, main_window: Tk) -> None:
         ttk.Frame.__init__(self, parent)
         self.main_window = main_window
 
@@ -52,8 +52,7 @@ class TomatoTimer(ttk.Frame):
         self.minutes = StringVar()
         self.seconds = StringVar()
 
-        # STATUS
-        # one of three session statuses: focus, short_break, long_break
+        # DEFAULT STATUS
         self.status = SessionStatus.FOCUS
 
         # APPEARANCE & STYLES
@@ -73,6 +72,7 @@ class TomatoTimer(ttk.Frame):
         )
         self.styles.configure("OptionMenu.TMenubutton", width=16)
 
+        # TIMER GUI COMPONENTS
         self.timer_background = ttk.Label(
             # contains background tomato image and colon seperator ie M:S
             self,
@@ -102,16 +102,16 @@ class TomatoTimer(ttk.Frame):
         session_status_list = [str(status.value["title"]) for status in list(SessionStatus)]
         self.list_selection = StringVar()
         self.list_selection.set(session_status_list[0])
-        self.select_session = ttk.OptionMenu(
+        self.option_menu_session_status = ttk.OptionMenu(
             self,
             self.list_selection,
-            str(SessionStatus.FOCUS.value["title"]),
+            str(self.status.value["title"]),
             *session_status_list,
             command=lambda x: self.change_session_status(x),
             style="OptionMenu.TMenubutton",
-            direction="above"
+            direction="above",
         )
-        self.select_session.grid(row=2, column=0, columnspan=2, pady=10)
+        self.option_menu_session_status.grid(row=2, column=0, columnspan=2, pady=10)
 
         self.set_session_time()
         self.set_styles()
