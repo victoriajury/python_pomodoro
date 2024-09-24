@@ -83,6 +83,13 @@ Install packages
 pipenv install [OPTIONS] [PACKAGES]...
 ```
 
+### Usage
+To run the application from a terminal:
+```
+python -m python_pomodoro.app
+```
+
+
 ### Run the tests
 
 #### Coverage with Pytest
