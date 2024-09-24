@@ -13,14 +13,14 @@ necessary modules (e.g., GUI, timer, tasks)
 class Pomodoro:
     def __init__(self, main_window: Tk) -> None:
         main_window.title("Pomodoro")
-        main_window.minsize(600, 550)
-        main_window.maxsize(600, 550)
+        main_window.minsize(600, 580)
+        main_window.maxsize(600, 580)
 
         # Content frame
         container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
         container.pack(side="top", fill="both", expand=True)
 
-        timer = TomatoTimer(container)
+        timer = TomatoTimer(container, main_window)
         timer.pack(side="left", fill="y")
 
         tasks = TaskList(container)
