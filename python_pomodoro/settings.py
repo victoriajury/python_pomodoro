@@ -13,19 +13,19 @@ class Settings(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         self.main_window = main_window
 
-        setting_focus = SettingSlider(self, "Focus time", 5, 60, int(SessionStatus.FOCUS.value["default_time"][0]))
+        setting_focus = SettingSlider(self, "Focus time", 5, 60, int(SessionStatus.FOCUS.value.default_time.minutes))
         setting_focus.grid(row=0, column=0, ipadx=5)
 
         setting_cycles = SettingSlider(self, "Cycles", 1, 10, DEFAULT_CYCLES)
         setting_cycles.grid(row=0, column=1, ipadx=5)
 
         setting_short_break = SettingSlider(
-            self, "Short Break", 1, 10, int(SessionStatus.SHORT_BREAK.value["default_time"][0])
+            self, "Short Break", 1, 10, int(SessionStatus.SHORT_BREAK.value.default_time.minutes)
         )
         setting_short_break.grid(row=1, column=0, ipadx=5, ipady=10)
 
         setting_long_break = SettingSlider(
-            self, "Long Break", 5, 45, int(SessionStatus.LONG_BREAK.value["default_time"][0])
+            self, "Long Break", 5, 45, int(SessionStatus.LONG_BREAK.value.default_time.minutes)
         )
         setting_long_break.grid(row=1, column=1, ipadx=5, ipady=10)
 

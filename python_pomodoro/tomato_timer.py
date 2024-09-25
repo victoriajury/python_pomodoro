@@ -1,4 +1,5 @@
 import time
+from dataclasses import dataclass
 from enum import Enum
 from tkinter import PhotoImage, StringVar, Tk, ttk
 
@@ -12,37 +13,55 @@ displaying timer, start/pause buttons, colours, tracking cycles
 DEFAULT_CYCLES = 4
 
 
+@dataclass
+class DefaultTime:
+    minutes: int
+    seconds: int
+
+
+@dataclass
+class Session:
+    title: str
+    default_time: DefaultTime
+    image: str
+    image_paused: str
+    foreground: str
+    background: str
+    foreground_paused: str
+    background_paused: str
+
+
 class SessionStatus(Enum):
-    FOCUS = {
-        "title": "Focus",
-        "default_time": [25, 0],
-        "image": "tomato_red_bg.png",
-        "image_paused": "tomato_red_dark_bg.png",
-        "foreground": "#ffc9c9",
-        "background": "#f55453",
-        "foreground_paused": "#ec9291",
-        "background_paused": "#d24847",
-    }
-    SHORT_BREAK = {
-        "title": "Short Break",
-        "default_time": [5, 0],
-        "image": "tomato_yellow_bg.png",
-        "image_paused": "tomato_yellow_dark_bg.png",
-        "foreground": "#ffecc5",
-        "background": "#f5c944",
-        "foreground_paused": "#dcbf70",
-        "background_paused": "#c5a237",
-    }
-    LONG_BREAK = {
-        "title": "Long Break",
-        "default_time": [15, 0],
-        "image": "tomato_green_bg.png",
-        "image_paused": "tomato_green_dark_bg.png",
-        "foreground": "#c2f8c2",
-        "background": "#76c776",
-        "foreground_paused": "#87c387",
-        "background_paused": "#5fa05f",
-    }
+    FOCUS = Session(
+        title="Focus",
+        default_time=DefaultTime(25, 0),
+        image="tomato_red_bg.png",
+        image_paused="tomato_red_dark_bg.png",
+        foreground="#ffc9c9",
+        background="#f55453",
+        foreground_paused="#ec9291",
+        background_paused="#d24847",
+    )
+    SHORT_BREAK = Session(
+        title="Short Break",
+        default_time=DefaultTime(5, 0),
+        image="tomato_yellow_bg.png",
+        image_paused="tomato_yellow_dark_bg.png",
+        foreground="#ffecc5",
+        background="#f5c944",
+        foreground_paused="#dcbf70",
+        background_paused="#c5a237",
+    )
+    LONG_BREAK = Session(
+        title="Long Break",
+        default_time=DefaultTime(15, 0),
+        image="tomato_green_bg.png",
+        image_paused="tomato_green_dark_bg.png",
+        foreground="#c2f8c2",
+        background="#76c776",
+        foreground_paused="#87c387",
+        background_paused="#5fa05f",
+    )
 
 
 class TomatoTimer(ttk.Frame):
@@ -59,10 +78,10 @@ class TomatoTimer(ttk.Frame):
 
         # APPEARANCE & STYLES
         self.bg_images: dict[SessionStatus, PhotoImage] = {
-            status: PhotoImage(file=get_image_from_resources(str(status.value["image"]))) for status in SessionStatus
+            status: PhotoImage(file=get_image_from_resources(str(status.value.image))) for status in SessionStatus
         }
         self.bg_images_paused: dict[SessionStatus, PhotoImage] = {
-            status: PhotoImage(file=get_image_from_resources(str(status.value["image_paused"])))
+            status: PhotoImage(file=get_image_from_resources(str(status.value.image_paused)))
             for status in SessionStatus
         }
         self.styles = ttk.Style(self)
@@ -104,13 +123,13 @@ class TomatoTimer(ttk.Frame):
         self.button_start = ttk.Button(self, text="Start", command=self.start_timer)
         self.show_start_button()
 
-        session_status_list: list[str] = [str(status.value["title"]) for status in list(SessionStatus)]
+        session_status_list: list[str] = [str(status.value.title) for status in list(SessionStatus)]
         self.list_selection = StringVar()
         self.list_selection.set(session_status_list[0])
         self.option_menu_session_status = ttk.OptionMenu(
             self,
             self.list_selection,
-            str(self.status.value["title"]),
+            str(self.status.value.title),
             *session_status_list,
             command=lambda x: self.change_session_status(x),
             style="OptionMenu.TMenubutton",
@@ -126,8 +145,8 @@ class TomatoTimer(ttk.Frame):
 
     def set_session_time(self) -> None:
         # set session time and pad with zeros
-        mins = int(self.status.value["default_time"][0].__str__())
-        secs = int(self.status.value["default_time"][1].__str__())
+        mins = self.status.value.default_time.minutes
+        secs = self.status.value.default_time.seconds
         self.minutes.set("{0:02}".format(mins))
         self.seconds.set("{0:02}".format(secs))
         self.current_time = int(self.minutes.get()) * 60 + int(self.seconds.get())
@@ -135,16 +154,20 @@ class TomatoTimer(ttk.Frame):
     def set_styles(self, reset: bool = False) -> None:
         if self.is_paused and reset is False:
             self.timer_background.configure(image=self.bg_images_paused[self.status])
+            self.styles.configure("TimerImage.TLabel", foreground=self.status.value.foreground_paused)
+            self.styles.configure(
+                "TimerText.TLabel",
+                background=self.status.value.background_paused,
+                foreground=self.status.value.foreground_paused,
+            )
         else:
             self.timer_background.configure(image=self.bg_images[self.status])
-
-        paused = "_paused" if self.is_paused and reset is False else ""
-        self.styles.configure("TimerImage.TLabel", foreground=self.status.value[f"foreground{paused}"])
-        self.styles.configure(
-            "TimerText.TLabel",
-            background=self.status.value[f"background{paused}"],
-            foreground=self.status.value[f"foreground{paused}"],
-        )
+            self.styles.configure("TimerImage.TLabel", foreground=self.status.value.foreground)
+            self.styles.configure(
+                "TimerText.TLabel",
+                background=self.status.value.background,
+                foreground=self.status.value.foreground,
+            )
 
     def start_timer(self) -> None:
         self.is_paused = False  # restart timer
@@ -160,9 +183,7 @@ class TomatoTimer(ttk.Frame):
             self.minutes.set("{0:02}".format(mins))
             self.seconds.set("{0:02}".format(secs))
             # updating the GUI window after decrementing the timer 1 second
-            self.main_window.title(
-                f"Pomodoro - {self.status.value["title"]} - {self.minutes.get()}:{self.seconds.get()}"
-            )
+            self.main_window.title(f"Pomodoro - {self.status.value.title} - {self.minutes.get()}:{self.seconds.get()}")
             self.main_window.update()
             time.sleep(1)
             self.current_time -= 1
@@ -172,7 +193,7 @@ class TomatoTimer(ttk.Frame):
 
     def pause_timer(self) -> None:
         self.is_paused = True
-        self.main_window.title(f"{self.status.value["title"]} - Paused")
+        self.main_window.title(f"{self.status.value.title} - Paused")
         self.show_start_button()
         self.set_styles()
 
@@ -181,7 +202,7 @@ class TomatoTimer(ttk.Frame):
         self.show_start_button()
         self.set_session_time()
         self.set_styles(reset=True)
-        self.main_window.title(f"Pomodoro - {self.status.value["title"]}")
+        self.main_window.title(f"Pomodoro - {self.status.value.title}")
 
     def start_next_session(self) -> None:
         if self.status in [SessionStatus.SHORT_BREAK, SessionStatus.LONG_BREAK]:
@@ -195,7 +216,7 @@ class TomatoTimer(ttk.Frame):
         else:
             self.status = SessionStatus.SHORT_BREAK
         self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {DEFAULT_CYCLES}")
-        self.main_window.title(f"Pomodoro - Start {self.status.value["title"]}")
+        self.main_window.title(f"Pomodoro - Start {self.status.value.title}")
         self.show_start_button()
         self.set_session_time()
         self.set_styles(reset=True)
@@ -203,9 +224,9 @@ class TomatoTimer(ttk.Frame):
     def change_session_status(self, status_var: StringVar) -> None:
         self.is_paused = True
         for status in list(SessionStatus):
-            if status_var == status.value["title"]:
+            if status_var == status.value.title:
                 self.status = status
-        self.main_window.title(f"Pomodoro - Start {self.status.value["title"]}")
+        self.main_window.title(f"Pomodoro - Start {self.status.value.title}")
         self.show_start_button()
         self.set_session_time()
         self.set_styles(reset=True)
