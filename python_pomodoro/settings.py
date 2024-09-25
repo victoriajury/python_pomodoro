@@ -1,4 +1,4 @@
-from tkinter import IntVar, Scale, ttk
+from tkinter import IntVar, Scale, Tk, ttk
 
 from .tomato_timer import DEFAULT_CYCLES, SessionStatus, TomatoTimer
 
@@ -9,9 +9,11 @@ for sessions and cycles.
 
 
 class Settings(ttk.Frame):
-    def __init__(self, parent: ttk.Frame, timer: TomatoTimer) -> None:
+    def __init__(self, parent: ttk.Frame, main_window: Tk, timer: TomatoTimer, controller: ttk.Button) -> None:
         ttk.Frame.__init__(self, parent)
+        self.main_window = main_window
         self.timer = timer
+        self.button = controller
 
         self.setting_focus = SettingSlider(
             self, "Focus time", 5, 60, int(SessionStatus.FOCUS.value.default_time.minutes)
@@ -31,8 +33,13 @@ class Settings(ttk.Frame):
         )
         self.setting_long_break.grid(row=1, column=1, ipadx=5, ipady=10)
 
-        self.settings_button = ttk.Button(self, text="Save Settings", command=self.update_settings)
-        self.settings_button.grid(row=2, column=0, columnspan=2)
+        self.button_reset = ttk.Button(self, text="Reset", command=self.reset_defaults)
+        self.button_reset.grid(row=2, column=0)
+        self.button_save = ttk.Button(self, text="Save", command=self.update_settings)
+        self.button_save.grid(row=2, column=1)
+
+    def reset_defaults(self) -> None:
+        pass
 
     def update_settings(self) -> None:
         focus_minutes = self.setting_focus.get_slider_value()
@@ -49,6 +56,15 @@ class Settings(ttk.Frame):
 
         self.timer.set_status(SessionStatus.FOCUS)
         self.timer.reset_timer()
+
+        # hide settings after saving
+        self.pack_forget()
+        self.button.pack(side="bottom", fill="x")
+        self.resize_window()
+
+    def resize_window(self) -> None:
+        self.main_window.minsize(600, 538)
+        self.main_window.maxsize(600, 538)
 
 
 class SettingSlider(ttk.Frame):
