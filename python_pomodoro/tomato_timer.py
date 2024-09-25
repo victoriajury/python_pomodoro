@@ -14,7 +14,7 @@ DEFAULT_CYCLES = 4
 
 
 @dataclass
-class DefaultTime:
+class Time:
     minutes: int
     seconds: int
 
@@ -22,7 +22,8 @@ class DefaultTime:
 @dataclass
 class Session:
     title: str
-    default_time: DefaultTime
+    time: Time
+    default_time: Time
     image: str
     image_paused: str
     foreground: str
@@ -30,11 +31,18 @@ class Session:
     foreground_paused: str
     background_paused: str
 
+    def set_time(self, minutes: int):
+        self.time = Time(minutes=minutes, seconds=0)
+
+    def set_time_to_default(self):
+        self.time = self.default_time
+
 
 class SessionStatus(Enum):
     FOCUS = Session(
         title="Focus",
-        default_time=DefaultTime(25, 0),
+        time=Time(0, 0),
+        default_time=Time(25, 0),
         image="tomato_red_bg.png",
         image_paused="tomato_red_dark_bg.png",
         foreground="#ffc9c9",
@@ -44,7 +52,8 @@ class SessionStatus(Enum):
     )
     SHORT_BREAK = Session(
         title="Short Break",
-        default_time=DefaultTime(5, 0),
+        time=Time(0, 0),
+        default_time=Time(5, 0),
         image="tomato_yellow_bg.png",
         image_paused="tomato_yellow_dark_bg.png",
         foreground="#ffecc5",
@@ -54,7 +63,8 @@ class SessionStatus(Enum):
     )
     LONG_BREAK = Session(
         title="Long Break",
-        default_time=DefaultTime(15, 0),
+        time=Time(0, 0),
+        default_time=Time(15, 0),
         image="tomato_green_bg.png",
         image_paused="tomato_green_dark_bg.png",
         foreground="#c2f8c2",
@@ -69,13 +79,15 @@ class TomatoTimer(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         self.main_window = main_window
 
-        # DEFAULT STATUS
+        # DEFAULT STATUS & TIMES
         self.status = SessionStatus.FOCUS
         self.is_paused = False
         self.minutes = StringVar()
         self.seconds = StringVar()
         self.cycles = DEFAULT_CYCLES
         self.current_cycle = 1
+        for s in list(SessionStatus):
+            s.value.set_time_to_default()
 
         # APPEARANCE & STYLES
         self.bg_images: dict[SessionStatus, PhotoImage] = {
@@ -154,8 +166,8 @@ class TomatoTimer(ttk.Frame):
 
     def set_session_time(self) -> None:
         # set session time and pad with zeros
-        mins = self.status.value.default_time.minutes
-        secs = self.status.value.default_time.seconds
+        mins = self.status.value.time.minutes
+        secs = self.status.value.time.seconds
         self.minutes.set("{0:02}".format(mins))
         self.seconds.set("{0:02}".format(secs))
         self.current_time = int(self.minutes.get()) * 60 + int(self.seconds.get())
@@ -216,14 +228,14 @@ class TomatoTimer(ttk.Frame):
     def start_next_session(self) -> None:
         if self.status in [SessionStatus.SHORT_BREAK, SessionStatus.LONG_BREAK]:
             # Start another focus session after a break
-            self.status = SessionStatus.FOCUS
+            self.set_status(SessionStatus.FOCUS)
             # Increment then reset cycles
             self.current_cycle = self.current_cycle + 1 if self.current_cycle < self.cycles else 1
         elif self.current_cycle == self.cycles:
             # Start a long break
-            self.status = SessionStatus.LONG_BREAK
+            self.set_status(SessionStatus.LONG_BREAK)
         else:
-            self.status = SessionStatus.SHORT_BREAK
+            self.set_status(SessionStatus.SHORT_BREAK)
         self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {self.cycles}")
         self.main_window.title(f"Pomodoro - Start {self.status.value.title}")
         self.show_start_button()
@@ -234,7 +246,7 @@ class TomatoTimer(ttk.Frame):
         self.is_paused = True
         for status in list(SessionStatus):
             if status_var == status.value.title:
-                self.status = status
+                self.set_status(status)
         self.main_window.title(f"Pomodoro - Start {self.status.value.title}")
         self.show_start_button()
         self.set_session_time()
