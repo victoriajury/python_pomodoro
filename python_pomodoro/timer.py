@@ -5,8 +5,8 @@ from tkinter import PhotoImage, StringVar, Tk, ttk
 from .helpers import get_image_from_resources
 
 """
-Handles all the user interface components like buttons, sliders,
-task checklists, and component layouts
+Handles all the timer UI components and functionality:
+displaying timer, start/pause buttons, colours, tracking cycles
 """
 
 DEFAULT_CYCLES = 4
@@ -209,33 +209,3 @@ class TomatoTimer(ttk.Frame):
         self.show_start_button()
         self.set_session_time()
         self.set_styles(reset=True)
-
-
-class TaskList(ttk.Frame):
-    def __init__(self, parent: ttk.Frame) -> None:
-        ttk.Frame.__init__(self, parent)
-        self.configure(border=1, borderwidth=1, relief="sunken", padding=10)
-
-        label1 = ttk.Label(self, text="Tasks")
-        label1.pack(side="top")
-
-        self.task_list = ttk.Frame(self, padding=15)
-        self.task_list.pack(side="top")
-
-        ttk.Checkbutton(self.task_list, text="List item...").pack()
-        ttk.Checkbutton(self.task_list, text="List item...").pack()
-        ttk.Checkbutton(self.task_list, text="List item...").pack()
-
-        button_add_task = ttk.Button(self, text="Add new task")
-        button_add_task.pack(side="bottom")
-
-
-class SettingSlider(ttk.Frame):
-    def __init__(self, parent: ttk.Frame, label_text: str, min_value: int, max_value: int) -> None:
-        ttk.Frame.__init__(self, parent)
-
-        label1 = ttk.Label(self, text=label_text)
-        label1.grid(row=0, column=0)
-
-        slider = ttk.Scale(self, length=150, from_=min_value, to=max_value)
-        slider.grid(row=1, column=0)

@@ -1,7 +1,9 @@
 import tkinter as tk
 from tkinter import Tk, ttk
 
-from .gui import SettingSlider, TaskList, TomatoTimer
+from .settings import Settings
+from .tasklist import TaskList
+from .timer import TomatoTimer
 
 """
 Main entry point application.
@@ -13,37 +15,25 @@ necessary modules (e.g., GUI, timer, tasks)
 class Pomodoro:
     def __init__(self, main_window: Tk) -> None:
         main_window.title("Pomodoro")
-        main_window.minsize(600, 580)
-        main_window.maxsize(600, 580)
+        main_window.minsize(600, 620)
+        main_window.maxsize(700, 680)
 
         # Content frame
-        container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
-        container.pack(side="top", fill="both", expand=True)
+        top_container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
+        top_container.pack(side="top", fill="both", expand=True)
 
-        timer = TomatoTimer(container, main_window)
+        timer = TomatoTimer(top_container, main_window)
         timer.pack(side="left", fill="y")
 
-        tasks = TaskList(container)
+        tasks = TaskList(top_container, main_window)
         tasks.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         # Settings frame
-        settings = ttk.Frame(main_window, padding=5, style="Settings.TFrame")
-        settings.pack(side="top", fill="y", expand=False)
+        bottom_container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
+        bottom_container.pack(side="top", fill="both", expand=True)
 
-        setting_focus = SettingSlider(settings, "Focus time", 5, 25)
-        setting_focus.grid(row=0, column=0, ipadx=5)
-
-        setting_cycles = SettingSlider(settings, "Cycles", 1, 10)
-        setting_cycles.grid(row=0, column=1, ipadx=5)
-
-        setting_short_break = SettingSlider(settings, "Short Break", 1, 10)
-        setting_short_break.grid(row=1, column=0, ipadx=5, ipady=5)
-
-        setting_long_break = SettingSlider(settings, "Long Break", 5, 45)
-        setting_long_break.grid(row=1, column=1, ipadx=5, ipady=5)
-
-        settings_button = ttk.Button(settings, text="Settings")
-        settings_button.grid(row=2, column=0, columnspan=2)
+        settings = Settings(bottom_container, main_window)
+        settings.pack(side="top", fill="y")
 
 
 def main() -> None:
