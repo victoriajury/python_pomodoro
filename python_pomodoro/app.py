@@ -22,8 +22,8 @@ class Pomodoro:
         top_container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
         top_container.pack(side="top", fill="both", expand=True)
 
-        timer = TomatoTimer(top_container, main_window)
-        timer.pack(side="left", fill="y")
+        self.timer = TomatoTimer(top_container, main_window)
+        self.timer.pack(side="left", fill="y")
 
         tasks = TaskList(top_container, main_window)
         tasks.pack(side="left", fill="both", expand=True, padx=10, pady=10)
@@ -32,7 +32,7 @@ class Pomodoro:
         bottom_container = ttk.Frame(main_window, padding=5, style="Container.TFrame")
         bottom_container.pack(side="top", fill="both", expand=True)
 
-        settings = Settings(bottom_container, main_window)
+        settings = Settings(bottom_container, self.timer)
         settings.pack(side="top", fill="y")
 
 
