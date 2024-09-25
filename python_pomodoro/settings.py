@@ -1,6 +1,6 @@
 from tkinter import IntVar, Scale, Tk, ttk
 
-from .timer import DEFAULT_CYCLES, SessionStatus
+from .tomato_timer import DEFAULT_CYCLES, SessionStatus
 
 """
 Handles all the settings components like control sliders,

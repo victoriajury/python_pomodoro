@@ -3,7 +3,7 @@ from tkinter import Tk, ttk
 
 from .settings import Settings
 from .tasklist import TaskList
-from .timer import TomatoTimer
+from .tomato_timer import TomatoTimer
 
 """
 Main entry point application.
