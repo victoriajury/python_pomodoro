@@ -3,8 +3,11 @@ from tkinter import IntVar, Scale, Tk, ttk
 from .tomato_timer import DEFAULT_CYCLES, SessionStatus, TomatoTimer
 
 """
-Handles all the settings components like control sliders,
-for sessions and cycles.
+Handles all the settings for the Pomodoro app by calling get and set methods on the
+Scale slider controls and passing the values to the SessionStatus enum.
+
+The timer methods for setting the status and resetting are called when the save button is pressed.
+Lastly the Settings frame is hidden and the main window resized.
 """
 
 

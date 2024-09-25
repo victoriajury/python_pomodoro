@@ -6,8 +6,12 @@ from tkinter import PhotoImage, StringVar, Tk, ttk
 from .helpers import get_image_from_resources
 
 """
-Handles all the timer UI components and functionality:
-displaying timer, start/pause buttons, colours, tracking cycles
+Handles all the timer UI components and functionality such as start/pause and
+reset buttons or drop-down list to choose the current session.
+Displays the timer as Label components with a background image, and are updated as
+the timer runs in a while loop.
+Data for text colours and defaults are stored in the SessionStatus enum as Session
+dataclasses with methods to set the time or reset the defaults.
 """
 
 DEFAULT_CYCLES = 4
