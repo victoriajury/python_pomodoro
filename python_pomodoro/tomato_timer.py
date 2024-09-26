@@ -1,7 +1,9 @@
 import time
 from dataclasses import dataclass
 from enum import Enum
-from tkinter import PhotoImage, StringVar, Tk, ttk
+from tkinter import PhotoImage, StringVar, Tk, messagebox, ttk
+
+from playsound3 import playsound  # type: ignore
 
 from .helpers import get_image_from_resources
 
@@ -44,7 +46,7 @@ class Session:
 
 class SessionStatus(Enum):
     FOCUS = Session(
-        title="Focus",
+        title="Focus Time",
         time=Time(0, 0),
         default_time=Time(25, 0),
         image="tomato_red_bg.png",
@@ -231,20 +233,38 @@ class TomatoTimer(ttk.Frame):
 
     def start_next_session(self) -> None:
         if self.status in [SessionStatus.SHORT_BREAK, SessionStatus.LONG_BREAK]:
-            # Start another focus session after a break
-            self.set_status(SessionStatus.FOCUS)
-            # Increment then reset cycles
+            start = self.alert_session_ended(next_session=SessionStatus.FOCUS)
+            # Increment cycle
             self.current_cycle = self.current_cycle + 1 if self.current_cycle < self.cycles else 1
         elif self.current_cycle == self.cycles:
-            # Start a long break
-            self.set_status(SessionStatus.LONG_BREAK)
+            start = self.alert_session_ended(next_session=SessionStatus.LONG_BREAK)
         else:
-            self.set_status(SessionStatus.SHORT_BREAK)
+            start = self.alert_session_ended(next_session=SessionStatus.SHORT_BREAK)
+
         self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {self.cycles}")
-        self.main_window.title(f"Pomodoro - Start {self.status.value.title}")
+        self.main_window.title(f"Pomodoro - {self.status.value.title}")
         self.show_start_button()
         self.set_session_time()
         self.update_styles(reset=True)
+
+        if start:
+            self.start_timer()
+        else:
+            self.main_window.title(f"Pomodoro - Click Start to begin {self.status.value.title}")
+
+    def alert_session_ended(self, next_session: SessionStatus) -> bool:
+        playsound("resources/sounds/short_alert.mp3", block=False)
+        cycle_msg = (
+            f"You have completed cycle {self.current_cycle} of {self.cycles}.\n"
+            if self.status == SessionStatus.SHORT_BREAK
+            else ""
+        )
+        response = messagebox.askyesno(
+            title=f"{self.status.value.title} has ended",
+            message=f"{cycle_msg}Would you like to start the next {next_session.value.title.lower()}?",
+        )
+        self.set_status(next_session)
+        return response
 
     def change_session_status(self, status_var: StringVar) -> None:
         self.is_paused = True
