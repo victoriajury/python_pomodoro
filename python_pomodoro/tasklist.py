@@ -42,8 +42,10 @@ class TaskList(ttk.Frame):
         self.button_add_task.pack(side="bottom")
 
         self.button_save_task = ttk.Button(self, text="Save task", command=self.save_new_task)
+        self.button_clear_task = ttk.Button(self, text="Clear completed", command=self.clear_completed_tasks)
+        self.show_hide_clear_task_button()
 
-    def show_task_entry_input(self) -> None:
+    def show_task_entry_input(self, event=None) -> None:
         self.button_add_task.pack_forget()
         self.button_save_task.pack(side="bottom")
         self.entry_task_input.pack(side="bottom", pady=10)
@@ -56,14 +58,24 @@ class TaskList(ttk.Frame):
         self.entry_task_input.pack_forget()
         self.button_add_task.pack(side="bottom")
 
-        task = Task(uuid4(), self.entry_task_input.get())
+        id = uuid4()
+        task = Task(id, self.entry_task_input.get())
         if task.title:
             self.create_task_checkbutton(task)
+        self.tasks_by_id[id] = task
+        self.show_hide_clear_task_button()
 
         # Prevent new task creation with enter key and clear input
         self.main_window.unbind("<Return>")
         self.entry_task_input.delete(0, "end")
-        self.focus()
+        self.button_add_task.focus()
+        self.main_window.bind("<Return>", self.show_task_entry_input)
+
+    def show_hide_clear_task_button(self) -> None:
+        if len(self.tasks_by_id) > 0:
+            self.button_clear_task.pack()
+        else:
+            self.button_clear_task.pack_forget()
 
     def create_task_checkbutton(self, task: Task) -> None:
         is_complete = IntVar()
@@ -80,8 +92,19 @@ class TaskList(ttk.Frame):
         checkbox.pack(anchor="w")
         task.checkbox = checkbox
 
-    def toggle_task_complete(self, task: Task, is_checked: IntVar):
+    def toggle_task_complete(self, task: Task, is_checked: IntVar) -> None:
         off_color = "black"
         on_color = "gray"
         if task.checkbox:
             task.checkbox["fg"] = on_color if is_checked.get() else off_color
+            task.is_complete = bool(is_checked.get())
+
+    def clear_completed_tasks(self) -> None:
+        uuids = []
+        for _, task in self.tasks_by_id.items():
+            if task.checkbox and task.is_complete:
+                uuids.append(task.id)
+                task.checkbox.destroy()
+        for id in uuids:
+            self.tasks_by_id.pop(id)
+        self.show_hide_clear_task_button()
