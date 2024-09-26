@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "d42e000db3ca2948fda63341227a587d07a0f49d17171b9d280df40b3331ca20"
+            "sha256": "88596bb97d54e80b4f6b3151072333adb4c5089cae5f5ccc1443b8e5db8fe545"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -15,7 +15,25 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "certifi": {
+            "hashes": [
+                "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8",
+                "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2024.8.30"
+        },
+        "playsound3": {
+            "hashes": [
+                "sha256:a28c8a4a66105ba98eee7bbdd5e851ca9618c62a6df5da536d5f790ebc7cc159",
+                "sha256:b562de6bd6333d1cfe83d79c2258b75474e8d18c165a07ce0eeb63b321611b96"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==2.2.2"
+        }
+    },
     "develop": {
         "black": {
             "hashes": [

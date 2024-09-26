@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from tkinter import PhotoImage, StringVar, Tk, messagebox, ttk
 
+from playsound3 import playsound  # type: ignore
+
 from .helpers import get_image_from_resources
 
 """
@@ -251,6 +253,7 @@ class TomatoTimer(ttk.Frame):
             self.main_window.title(f"Pomodoro - Click Start to begin {self.status.value.title}")
 
     def alert_session_ended(self, next_session: SessionStatus) -> bool:
+        playsound("resources/sounds/short_alert.mp3", block=False)
         cycle_msg = (
             f"You have completed cycle {self.current_cycle} of {self.cycles}.\n"
             if self.status == SessionStatus.SHORT_BREAK
