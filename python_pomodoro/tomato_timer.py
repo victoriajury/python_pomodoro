@@ -97,10 +97,12 @@ class TomatoTimer(ttk.Frame):
 
         # APPEARANCE & STYLES
         self.bg_images: dict[SessionStatus, PhotoImage] = {
-            status: PhotoImage(file=get_image_from_resources(status.value.image)) for status in SessionStatus
+            status: PhotoImage(file=get_image_from_resources(status.value.image), master=self)
+            for status in SessionStatus
         }
         self.bg_images_paused: dict[SessionStatus, PhotoImage] = {
-            status: PhotoImage(file=get_image_from_resources(status.value.image_paused)) for status in SessionStatus
+            status: PhotoImage(file=get_image_from_resources(status.value.image_paused), master=self)
+            for status in SessionStatus
         }
         self.styles = ttk.Style(self)
         self.styles.configure("TimerImage.TLabel", font=("", 40, "bold"), justify="center")
@@ -163,8 +165,10 @@ class TomatoTimer(ttk.Frame):
 
     def set_cycles(self, cycles: int) -> None:
         self.cycles = cycles
-        self.current_cycle = 1
-        self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {self.cycles}")
+        self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {cycles}")
+
+    def get_cycles(self) -> int:
+        return self.cycles
 
     def set_status(self, status: SessionStatus) -> None:
         self.status = status
@@ -196,7 +200,7 @@ class TomatoTimer(ttk.Frame):
                 foreground=self.status.value.foreground,
             )
 
-    def start_timer(self) -> None:
+    def start_timer(self, testing: bool = False) -> None:
         self.is_paused = False  # restart timer
         self.button_start.grid_forget()
         self.update_styles()
@@ -212,10 +216,10 @@ class TomatoTimer(ttk.Frame):
             # updating the GUI window after decrementing the timer 1 second
             self.main_window.title(f"Pomodoro - {self.status.value.title} - {self.minutes.get()}:{self.seconds.get()}")
             self.main_window.update()
-            time.sleep(0.01)
+            time.sleep(1) if not testing else time.sleep(0.001)
             self.current_time -= 1
 
-        if self.current_time == -1:
+        if self.current_time == -1 and not testing:
             self.start_next_session()
 
     def pause_timer(self) -> None:
@@ -233,14 +237,18 @@ class TomatoTimer(ttk.Frame):
 
     def start_next_session(self) -> None:
         if self.status in [SessionStatus.SHORT_BREAK, SessionStatus.LONG_BREAK]:
-            start = self.alert_session_ended(next_session=SessionStatus.FOCUS)
+            next_session = SessionStatus.FOCUS
+            start = self.alert_session_ended(next_session)
             # Increment cycle
             self.current_cycle = self.current_cycle + 1 if self.current_cycle < self.cycles else 1
         elif self.current_cycle == self.cycles:
-            start = self.alert_session_ended(next_session=SessionStatus.LONG_BREAK)
+            next_session = SessionStatus.LONG_BREAK
+            start = self.alert_session_ended(next_session)
         else:
-            start = self.alert_session_ended(next_session=SessionStatus.SHORT_BREAK)
+            next_session = SessionStatus.SHORT_BREAK
+            start = self.alert_session_ended(next_session)
 
+        self.set_status(next_session)
         self.label_cycles.configure(text=f"Cycle: {self.current_cycle} of {self.cycles}")
         self.main_window.title(f"Pomodoro - {self.status.value.title}")
         self.show_start_button()
@@ -263,7 +271,6 @@ class TomatoTimer(ttk.Frame):
             title=f"{self.status.value.title} has ended",
             message=f"{cycle_msg}Would you like to start the next {next_session.value.title.lower()}?",
         )
-        self.set_status(next_session)
         return response
 
     def change_session_status(self, status_var: StringVar) -> None:
