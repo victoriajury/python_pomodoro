@@ -71,10 +71,22 @@ class Settings(ttk.Frame):
 
     def close_settings(self) -> None:
         # hide settings after saving
-        self.reset_slider_defaults()
+        timer_sliders = ["setting_focus_time", "setting_short_break", "setting_long_break"]
+
+        # User presses cancel without saving the changes to settings
+        for s, session in zip(timer_sliders, list(SessionStatus)):
+            self.setting_changes_cancelled(s, session)
+        if self.setting_cycles.get_slider_value() != self.timer.get_cycles():
+            self.setting_cycles.set_slider_value(self.timer.get_cycles())
+
         self.pack_forget()
         self.button.pack(side="bottom", fill="x")
         self.resize_window()
+
+    def setting_changes_cancelled(self, slider: str, session: SessionStatus) -> None:
+        # User presses cancel without saving the changes to settings
+        if self.__getattribute__(slider).get_slider_value() != session.value.time.minutes:
+            self.__getattribute__(slider).set_slider_value(session.value.time.minutes)
 
     def resize_window(self) -> None:
         self.main_window.minsize(600, 538)

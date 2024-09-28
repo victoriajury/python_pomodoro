@@ -50,7 +50,19 @@ def test_close_settings(settings, test_functions):
     # Assert that the settings button is hidden
     assert test_functions.test_object_is_hidden(settings.button)
 
+    timer_sliders = ["setting_focus_time", "setting_short_break", "setting_long_break"]
+
+    # change the slider value without saving
+    for slider in timer_sliders:
+        settings.__getattribute__(slider).set_slider_value(17)
+    settings.setting_cycles.set_slider_value(8)
+
     settings.close_settings()
+
+    # Assert that sliders have reverted to previous values
+    for slider, session in zip(timer_sliders, list(SessionStatus)):
+        assert settings.__getattribute__(slider).get_slider_value() == session.value.time.minutes
+    assert settings.setting_cycles.get_slider_value() == settings.timer.get_cycles()
 
     # Assert that the setting button is shown
     assert bool(settings.button.pack_info()) is True
