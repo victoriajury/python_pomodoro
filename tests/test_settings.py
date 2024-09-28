@@ -1,5 +1,3 @@
-from _tkinter import TclError
-
 import pytest
 from python_pomodoro.tomato_timer import SessionStatus
 
@@ -44,19 +42,18 @@ def test_update_settings_cycles(settings):
     assert settings.timer.get_cycles() == slider_value
 
 
-def test_close_settings(settings):
+def test_close_settings(settings, test_functions):
     settings.button.pack_forget()
     settings.pack()
-    # Assert that the setting frame is shown
+    # Assert that the setting pannel is shown
     assert bool(settings.pack_info()) is True
-    with pytest.raises(TclError):
-        # pack_info() raises: ' window ".!button" isn't packed'
-        # instead of returning empty dict, like grid_info()
-        assert bool(settings.button.pack_info()) is False
+    # Assert that the settings button is hidden
+    assert test_functions.test_object_is_hidden(settings.button)
 
     settings.close_settings()
 
     # Assert that the setting button is shown
     assert bool(settings.button.pack_info()) is True
-    with pytest.raises(TclError):
-        assert bool(settings.pack_info()) is False
+
+    # Assert that the settings panel is hidden
+    assert test_functions.test_object_is_hidden(settings)

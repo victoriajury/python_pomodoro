@@ -14,3 +14,11 @@ def test_mainloop(mock_mainloop):
 
     # Check if mainloop was called
     mock_mainloop.assert_called_once()
+
+
+def test_show_settings(app, test_functions):
+
+    # Assert that the settings are hidden
+    assert test_functions.test_object_is_hidden(app.settings)
+    app.show_settings()
+    assert bool(app.settings.pack_info) is True

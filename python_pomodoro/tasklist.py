@@ -49,27 +49,29 @@ class TaskList(ttk.Frame):
         self.button_add_task.pack_forget()
         self.button_save_task.pack(side="bottom")
         self.entry_task_input.pack(side="bottom", pady=10)
-        self.entry_task_input.focus()
+        self.entry_task_input.focus_set()
         # Press enter key to save task
         self.main_window.bind("<Return>", self.save_new_task)
 
-    def save_new_task(self, event=None) -> None:
+    def save_new_task(self, event=None) -> UUID | None:
         self.button_save_task.pack_forget()
         self.entry_task_input.pack_forget()
         self.button_add_task.pack(side="bottom")
 
-        id = uuid4()
-        task = Task(id, self.entry_task_input.get())
-        if task.title:
+        if title := self.entry_task_input.get():
+            id = uuid4()
+            task = Task(id, title)
             self.create_task_checkbutton(task)
-        self.tasks_by_id[id] = task
-        self.show_hide_clear_task_button()
+            self.tasks_by_id[id] = task
+            self.show_hide_clear_task_button()
 
         # Prevent new task creation with enter key and clear input
         self.main_window.unbind("<Return>")
         self.entry_task_input.delete(0, "end")
         self.button_add_task.focus()
         self.main_window.bind("<Return>", self.show_task_entry_input)
+
+        return id or None
 
     def show_hide_clear_task_button(self) -> None:
         if len(self.tasks_by_id) > 0:
@@ -92,12 +94,12 @@ class TaskList(ttk.Frame):
         checkbox.pack(anchor="w")
         task.checkbox = checkbox
 
-    def toggle_task_complete(self, task: Task, is_checked: IntVar) -> None:
+    def toggle_task_complete(self, task: Task, checked: IntVar) -> None:
         off_color = "black"
         on_color = "gray"
         if task.checkbox:
-            task.checkbox["fg"] = on_color if is_checked.get() else off_color
-            task.is_complete = bool(is_checked.get())
+            task.checkbox["fg"] = on_color if checked.get() else off_color
+            task.is_complete = bool(checked.get())
 
     def clear_completed_tasks(self) -> None:
         uuids = []
