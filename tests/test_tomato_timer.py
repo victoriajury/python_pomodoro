@@ -48,7 +48,9 @@ def test_reset_timer(tomato_timer):
 
 
 def test_start_timer(tomato_timer):
-    with patch.object(tomato_timer, "main_window", create=True) as mock_main_window:
+    with patch.object(tomato_timer, "main_window", create=True) as mock_main_window, patch.object(
+        tomato_timer, "start_next_session"
+    ) as mock_start_next_session:
         mock_main_window.update = MagicMock()
 
         # Set timer to 1 minute to speed up test
@@ -56,6 +58,8 @@ def test_start_timer(tomato_timer):
         tomato_timer.set_session_time()
 
         tomato_timer.start_timer(testing=True)
+        assert tomato_timer.current_time == -1
+        mock_start_next_session.assert_called_once()
 
         # Ensure that the timer starts and styles are updated
         assert tomato_timer.is_paused is False

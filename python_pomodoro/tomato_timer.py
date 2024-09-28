@@ -219,8 +219,7 @@ class TomatoTimer(ttk.Frame):
             time.sleep(1) if not testing else time.sleep(0.001)
             self.current_time -= 1
 
-        if self.current_time == -1 and not testing:
-            self.start_next_session()
+        self.start_next_session()
 
     def pause_timer(self) -> None:
         self.is_paused = True
