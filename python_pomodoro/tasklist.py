@@ -36,6 +36,7 @@ class TaskList(ttk.Frame):
         for _, task in self.tasks_by_id.items():
             self.create_task_checkbutton(task)
 
+        self.label_task_input = ttk.Label(self)
         self.entry_task_input = ttk.Entry(self)
 
         self.button_add_task = ttk.Button(self, text="Add new task", command=self.show_task_entry_input)
@@ -47,6 +48,7 @@ class TaskList(ttk.Frame):
 
     def show_task_entry_input(self, event=None) -> None:
         self.button_add_task.pack_forget()
+        self.label_task_input.pack_forget()
         self.button_save_task.pack(side="bottom")
         self.entry_task_input.pack(side="bottom", pady=10)
         self.entry_task_input.focus_set()
@@ -54,24 +56,29 @@ class TaskList(ttk.Frame):
         self.main_window.bind("<Return>", self.save_new_task)
 
     def save_new_task(self, event=None) -> UUID | None:
-        self.button_save_task.pack_forget()
-        self.entry_task_input.pack_forget()
-        self.button_add_task.pack(side="bottom")
-
-        if title := self.entry_task_input.get():
+        input_data = self.entry_task_input.get()
+        if len(input_data) > 0:
             id = uuid4()
-            task = Task(id, title)
+            task = Task(id=id, title=input_data)
             self.create_task_checkbutton(task)
             self.tasks_by_id[id] = task
             self.show_hide_clear_task_button()
 
-        # Prevent new task creation with enter key and clear input
-        self.main_window.unbind("<Return>")
-        self.entry_task_input.delete(0, "end")
-        self.button_add_task.focus()
-        self.main_window.bind("<Return>", self.show_task_entry_input)
+            # Prevent new task creation with enter key and clear input
+            self.main_window.unbind("<Return>")
+            self.entry_task_input.delete(0, "end")
+            self.button_add_task.focus()
+            self.main_window.bind("<Return>", self.show_task_entry_input)
 
-        return id or None
+            self.button_save_task.pack_forget()
+            self.entry_task_input.pack_forget()
+            self.label_task_input.pack_forget()
+            self.button_add_task.pack(side="bottom")
+            return id
+        else:
+            self.label_task_input.configure(text="Please enter a task...", foreground="grey")
+            self.label_task_input.pack(side="bottom")
+        return None
 
     def show_hide_clear_task_button(self) -> None:
         if len(self.tasks_by_id) > 0:
@@ -100,6 +107,8 @@ class TaskList(ttk.Frame):
         if task.checkbox:
             task.checkbox["fg"] = on_color if checked.get() else off_color
             task.is_complete = bool(checked.get())
+        else:
+            self.tasks_by_id.pop(task.id)
 
     def clear_completed_tasks(self) -> None:
         uuids = []

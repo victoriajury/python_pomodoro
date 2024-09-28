@@ -219,7 +219,16 @@ def test_change_session_status(tomato_timer, status_str, expected_status):
         mock_set_session_time.assert_called_once()
 
         assert tomato_timer.main_window.title() == f"Pomodoro - Start {status_str}"
+        assert tomato_timer.list_selection.get() == expected_status.value.title
         assert tomato_timer.status == expected_status
+
+
+def test_change_session_dropdown_clicked(tomato_timer):
+    # Mock the call to change_session_status to isolate reset behavior
+    with patch.object(tomato_timer, "change_session_status") as mock_selection:
+
+        tomato_timer.option_menu_session_status.children["!menu"].invoke(0)
+        mock_selection.assert_called_once()
 
 
 """
