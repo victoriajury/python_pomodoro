@@ -18,8 +18,10 @@ class Settings(ttk.Frame):
         self.timer = timer
         self.button = controller
 
-        self.setting_focus = SettingSlider(self, "Focus time", 5, 60, SessionStatus.FOCUS.value.default_time.minutes)
-        self.setting_focus.grid(row=0, column=0, padx=15)
+        self.setting_focus_time = SettingSlider(
+            self, "Focus time", 5, 60, SessionStatus.FOCUS.value.default_time.minutes
+        )
+        self.setting_focus_time.grid(row=0, column=0, padx=15)
 
         self.setting_cycles = SettingSlider(self, "Cycles", 1, 10, DEFAULT_CYCLES)
         self.setting_cycles.grid(row=0, column=1, padx=15)
@@ -34,21 +36,23 @@ class Settings(ttk.Frame):
         )
         self.setting_long_break.grid(row=1, column=1, padx=15, pady=10)
 
-        self.button_reset = ttk.Button(self, text="Reset", command=self.reset_defaults)
+        self.frame_buttons = ttk.Frame(self)
+        self.frame_buttons.grid(row=2, column=0, columnspan=2)
+        self.button_reset = ttk.Button(self.frame_buttons, text="Reset", command=self.reset_slider_defaults)
         self.button_reset.grid(row=2, column=0, sticky="e", padx=5)
-        self.button_save = ttk.Button(self, text="Save", command=self.update_settings)
+        self.button_save = ttk.Button(self.frame_buttons, text="Save", command=self.update_settings)
         self.button_save.grid(row=2, column=1, sticky="w", padx=5)
+        self.button_cancel = ttk.Button(self.frame_buttons, text="Cancel", command=self.close_settings)
+        self.button_cancel.grid(row=2, column=2, sticky="w", padx=5)
 
-    def reset_defaults(self) -> None:
-        self.setting_focus.set_slider_value(SessionStatus.FOCUS.value.default_time.minutes)
+    def reset_slider_defaults(self) -> None:
+        self.setting_focus_time.set_slider_value(SessionStatus.FOCUS.value.default_time.minutes)
         self.setting_short_break.set_slider_value(SessionStatus.SHORT_BREAK.value.default_time.minutes)
         self.setting_long_break.set_slider_value(SessionStatus.LONG_BREAK.value.default_time.minutes)
-        for s in list(SessionStatus):
-            s.value.set_time_to_default()
         self.setting_cycles.set_slider_value(DEFAULT_CYCLES)
 
     def update_settings(self) -> None:
-        focus_minutes = self.setting_focus.get_slider_value()
+        focus_minutes = self.setting_focus_time.get_slider_value()
         SessionStatus.FOCUS.value.set_time(focus_minutes)
 
         short_break_minutes = self.setting_short_break.get_slider_value()
@@ -59,11 +63,15 @@ class Settings(ttk.Frame):
 
         cycles = self.setting_cycles.get_slider_value()
         self.timer.set_cycles(cycles)
+        self.timer.current_cycle = 1  # reset cycles after updating settings
 
         self.timer.set_status(SessionStatus.FOCUS)
         self.timer.reset_timer()
+        self.close_settings()
 
+    def close_settings(self) -> None:
         # hide settings after saving
+        self.reset_slider_defaults()
         self.pack_forget()
         self.button.pack(side="bottom", fill="x")
         self.resize_window()
