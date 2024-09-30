@@ -29,9 +29,10 @@ def test_show_start_button(tomato_timer):
 
 def test_reset_timer(tomato_timer):
     # Mock the update_styles and set_session_time methods to isolate reset behavior
-    with patch.object(tomato_timer, "update_styles") as mock_update_styles, patch.object(
-        tomato_timer, "set_session_time"
-    ) as mock_set_session_time:
+    with (
+        patch.object(tomato_timer, "update_styles") as mock_update_styles,
+        patch.object(tomato_timer, "set_session_time") as mock_set_session_time,
+    ):
 
         tomato_timer.reset_timer()
 
@@ -48,9 +49,10 @@ def test_reset_timer(tomato_timer):
 
 
 def test_start_timer(tomato_timer):
-    with patch.object(tomato_timer, "main_window", create=True) as mock_main_window, patch.object(
-        tomato_timer, "start_next_session"
-    ) as mock_start_next_session:
+    with (
+        patch.object(tomato_timer, "main_window", create=True) as mock_main_window,
+        patch.object(tomato_timer, "start_next_session") as mock_start_next_session,
+    ):
         mock_main_window.update = MagicMock()
 
         # Set timer to 1 minute to speed up test
@@ -83,6 +85,41 @@ def test_pause_timer(tomato_timer):
 
         # Ensure that the timer styles are updated
         mock_update_styles.assert_called_once()
+
+
+def test_pause_at_zero(tomato_timer):
+    # Test: Pausing the timer when it reaches zero
+
+    # Set the timer to zero (manually simulate the timer hitting zero)
+    tomato_timer.minutes.set("00")
+    tomato_timer.seconds.set("00")
+    tomato_timer.current_time = 0
+
+    # Pause the timer
+    tomato_timer.pause_timer()
+
+    # Assert timer is paused and at zero
+    assert tomato_timer.is_paused is True
+    assert tomato_timer.minutes.get() == "00"
+    assert tomato_timer.seconds.get() == "00"
+
+
+def test_pause_midway(tomato_timer):
+    # Test: Pausing the timer midway through a session
+    with patch("python_pomodoro.tomato_timer.time.sleep"):
+        # Start the timer and simulate it running halfway
+        tomato_timer.minutes.set("12")
+        tomato_timer.seconds.set("30")
+        tomato_timer.current_time = 750  # 12 minutes and 30 seconds in seconds
+        tomato_timer.is_paused = False
+
+        # Pause the timer
+        tomato_timer.pause_timer()
+
+        # Assert the timer is paused and retains its midway values
+        assert tomato_timer.is_paused is True
+        assert tomato_timer.minutes.get() == "12"
+        assert tomato_timer.seconds.get() == "30"
 
 
 @pytest.mark.parametrize(
@@ -123,9 +160,10 @@ def test_update_styles(tomato_timer):
     ],
 )
 def test_start_next_session_click_yes(tomato_timer, status, cycle, expected_status, expected_cycle):
-    with patch.object(tomato_timer, "alert_session_ended", return_value=True) as mock_alert_session_ended, patch.object(
-        tomato_timer, "start_timer"
-    ) as mock_start_timer:
+    with (
+        patch.object(tomato_timer, "alert_session_ended", return_value=True) as mock_alert_session_ended,
+        patch.object(tomato_timer, "start_timer") as mock_start_timer,
+    ):
         tomato_timer.set_status(status)
         tomato_timer.current_cycle = cycle
 
@@ -147,9 +185,10 @@ def test_start_next_session_click_yes(tomato_timer, status, cycle, expected_stat
     ],
 )
 def test_start_next_session_click_no(tomato_timer, status, cycle, expected_status, expected_cycle):
-    with patch.object(
-        tomato_timer, "alert_session_ended", return_value=False
-    ) as mock_alert_session_ended, patch.object(tomato_timer, "start_timer") as mock_start_timer:
+    with (
+        patch.object(tomato_timer, "alert_session_ended", return_value=False) as mock_alert_session_ended,
+        patch.object(tomato_timer, "start_timer") as mock_start_timer,
+    ):
         tomato_timer.set_status(status)
         tomato_timer.current_cycle = cycle
 
@@ -181,9 +220,10 @@ def test_start_next_session_click_no(tomato_timer, status, cycle, expected_statu
     ],
 )
 def test_alert_session_ended(tomato_timer, status, cycle, next_session, cycle_msg, title, msg_session):
-    with patch("python_pomodoro.tomato_timer.playsound") as mock_playsound, patch(
-        "python_pomodoro.tomato_timer.messagebox.askyesno"
-    ) as mock_messagebox:
+    with (
+        patch("python_pomodoro.tomato_timer.playsound") as mock_playsound,
+        patch("python_pomodoro.tomato_timer.messagebox.askyesno") as mock_messagebox,
+    ):
         tomato_timer.set_status(status)
         tomato_timer.current_cycle = cycle
 
@@ -206,9 +246,10 @@ def test_alert_session_ended(tomato_timer, status, cycle, next_session, cycle_ms
 )
 def test_change_session_status(tomato_timer, status_str, expected_status):
     # Mock the update_styles and set_session_time methods to isolate reset behavior
-    with patch.object(tomato_timer, "update_styles") as mock_update_styles, patch.object(
-        tomato_timer, "set_session_time"
-    ) as mock_set_session_time:
+    with (
+        patch.object(tomato_timer, "update_styles") as mock_update_styles,
+        patch.object(tomato_timer, "set_session_time") as mock_set_session_time,
+    ):
 
         tomato_timer.change_session_status(status_str)
 

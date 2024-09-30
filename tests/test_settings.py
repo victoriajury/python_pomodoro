@@ -1,19 +1,26 @@
 import pytest
-from python_pomodoro.tomato_timer import SessionStatus
+from python_pomodoro.settings import SettingSlider
+from python_pomodoro.tomato_timer import DEFAULT_CYCLES, SessionStatus
 
 
 def test_settings_initialization(settings):
     pass
 
 
-def test_resetslider_defaults(settings):
+def test_reset_slider_defaults(settings):
+    # Change all slider values
+    settings.setting_focus_time.set_slider_value(30)
+    settings.setting_short_break.set_slider_value(9)
+    settings.setting_long_break.set_slider_value(18)
+    settings.setting_cycles.set_slider_value(6)
 
     settings.reset_slider_defaults()
 
-    assert settings.setting_focus_time.value.get() == 25
-    assert settings.setting_short_break.value.get() == 5
-    assert settings.setting_long_break.value.get() == 15
-    assert settings.setting_cycles.value.get() == 4
+    # Ensure all sliders are set back to their default values
+    assert settings.setting_focus_time.get_slider_value() == SessionStatus.FOCUS.value.default_time.minutes
+    assert settings.setting_short_break.get_slider_value() == SessionStatus.SHORT_BREAK.value.default_time.minutes
+    assert settings.setting_long_break.get_slider_value() == SessionStatus.LONG_BREAK.value.default_time.minutes
+    assert settings.setting_cycles.get_slider_value() == DEFAULT_CYCLES
 
 
 @pytest.mark.parametrize(
@@ -69,3 +76,15 @@ def test_close_settings(settings, test_functions):
 
     # Assert that the settings panel is hidden
     assert test_functions.test_object_is_hidden(settings)
+
+
+def test_slider_min_max_boundaries():
+    slider = SettingSlider(parent=None, label_text="Focus time", min_value=5, max_value=60, default_value=25)
+
+    # Test setting below the minimum
+    slider.set_slider_value(3)
+    assert slider.get_slider_value() == 5  # Ensure it is clamped to the min value
+
+    # Test setting above the maximum
+    slider.set_slider_value(70)
+    assert slider.get_slider_value() == 60  # Ensure it is clamped to the max value

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from string import punctuation
 from tkinter import Checkbutton, IntVar, Tk, ttk
 from typing import Optional
 from uuid import UUID, uuid4
@@ -57,7 +58,27 @@ class TaskList(ttk.Frame):
 
     def save_new_task(self, event=None) -> UUID | None:
         input_data = self.entry_task_input.get()
-        if len(input_data) > 0:
+
+        error = False
+
+        if not len(input_data) > 0:  # no text entered
+            self.label_task_input.configure(text="Please enter a task...", foreground="grey")
+            error = True
+        elif not len(input_data) < 100:  # text too long
+            self.label_task_input.configure(text="Task too long (max 100 chars.)", foreground="grey")
+            error = True
+        elif all(char in punctuation for char in input_data):  # only punctuation
+            self.label_task_input.configure(text="Please enter a valid task name.", foreground="grey")
+            error = True
+        elif all(char.isspace() for char in input_data):  # only whitespaces
+            self.label_task_input.configure(text="Please enter a valid task name.", foreground="grey")
+            error = True
+        elif any(task.title for task in self.tasks_by_id.values() if input_data.lower() == task.title.lower()):
+            # check for duplicates
+            self.label_task_input.configure(text="Duplicate task name.", foreground="grey")
+            error = True
+
+        if not error:
             id = uuid4()
             task = Task(id=id, title=input_data)
             self.create_task_checkbutton(task)
@@ -75,9 +96,8 @@ class TaskList(ttk.Frame):
             self.label_task_input.pack_forget()
             self.button_add_task.pack(side="bottom")
             return id
-        else:
-            self.label_task_input.configure(text="Please enter a task...", foreground="grey")
-            self.label_task_input.pack(side="bottom")
+
+        self.label_task_input.pack(side="bottom")
         return None
 
     def show_hide_clear_task_button(self) -> None:
