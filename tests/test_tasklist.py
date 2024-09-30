@@ -2,6 +2,7 @@ from tkinter import Checkbutton, IntVar
 from unittest.mock import patch
 from uuid import uuid4
 
+import pytest
 from python_pomodoro.tasklist import Task
 
 
@@ -21,11 +22,22 @@ def test_show_task_entry_input(tasks, test_functions):
     assert test_functions.test_object_is_hidden(tasks.button_add_task)
 
 
-def test_save_new_task_valid(tasks, test_functions):
+@pytest.mark.parametrize(
+    "text",
+    (
+        "Some new task",
+        "Hello!",
+        "123 test",
+        "123456",
+        "test123",
+        "test 123!",
+        "@abc",
+    ),
+)
+def test_save_new_task_valid(tasks, test_functions, text):
 
     assert len(tasks.tasks_by_id) == 1
 
-    text = "Some new test task"
     tasks.entry_task_input.insert(0, text)
 
     task_id = tasks.save_new_task()
@@ -43,8 +55,7 @@ def test_save_new_task_valid(tasks, test_functions):
     assert tasks.tasks_by_id[task_id].title == text
 
 
-def test_save_new_task_invalid(tasks):
-
+def test_save_new_task_invalid_empty_string(tasks):
     assert len(tasks.tasks_by_id) == 1
 
     text = ""
@@ -54,10 +65,68 @@ def test_save_new_task_invalid(tasks):
 
     assert tasks.label_task_input["text"] == "Please enter a task..."
     assert bool(tasks.label_task_input.pack_info()) is True
-
     assert task_id is None
+    assert len(tasks.tasks_by_id) == 1  # No new task added
 
+
+@pytest.mark.parametrize(
+    "text",
+    ("    ", "!!!!", "%%%%", "#####", " \t \n "),
+)
+def test_save_new_task_invalid(tasks, text):
     assert len(tasks.tasks_by_id) == 1
+
+    tasks.entry_task_input.insert(0, text)
+
+    task_id = tasks.save_new_task()
+
+    # Ensure the task is not added
+    assert tasks.label_task_input["text"] == "Please enter a valid task name."
+    assert task_id is None
+    assert len(tasks.tasks_by_id) == 1  # No new task added
+
+
+def test_save_invalid_duplicate_tasks(tasks):
+    assert len(tasks.tasks_by_id) == 1
+
+    text = "Test task"
+    tasks.entry_task_input.insert(0, text)
+
+    task_id_1 = tasks.save_new_task()
+
+    assert len(tasks.tasks_by_id) == 2  # New task added
+    assert tasks.tasks_by_id[task_id_1].title == text
+
+    # Add the same task again
+    tasks.entry_task_input.insert(0, text)
+    task_id_2 = tasks.save_new_task()
+
+    assert tasks.label_task_input["text"] == "Duplicate task name."
+    assert task_id_2 is None
+    assert len(tasks.tasks_by_id) == 2  # No new task added
+
+    tasks.entry_task_input.delete(0, "end")
+
+    text = "Test task 2"
+    tasks.entry_task_input.insert(0, text)
+
+    task_id_3 = tasks.save_new_task()
+
+    assert len(tasks.tasks_by_id) == 3  # New task added
+    assert tasks.tasks_by_id[task_id_3].title == text
+
+
+def test_save_task_with_max_length(tasks):
+    assert len(tasks.tasks_by_id) == 1
+
+    long_title = "A" * 300  # Exceeding reasonable max length (e.g., 255 chars)
+    tasks.entry_task_input.insert(0, long_title)
+
+    tasks.save_new_task()
+
+    # Ensure the task title is truncated or properly handled
+    assert tasks.label_task_input["text"] == "Task too long (max 100 chars.)"
+    assert len(tasks.tasks_by_id) == 1  # No new task added
 
 
 def test_show_hide_clear_task_button(tasks, test_functions):
@@ -140,3 +209,38 @@ def test_clear_completed_tasks(tasks, test_functions):
 
     # Assert that the clear task button is hidden
     assert test_functions.test_object_is_hidden(tasks.button_clear_task)
+
+
+def test_clear_completed_no_tasks_completed(tasks, test_functions):
+    tasks.clear_completed_tasks()
+
+    assert len(tasks.tasks_by_id) == 1  # No tasks should be removed
+    assert bool(tasks.button_clear_task.pack_info()) is True
+
+
+def test_clear_tasks_when_empty(tasks, test_functions):
+    tasks.tasks_by_id.clear()  # Simulate an empty task list
+
+    tasks.show_hide_clear_task_button()
+    assert test_functions.test_object_is_hidden(tasks.button_clear_task)  # Clear button should be hidden
+
+
+def test_clear_completed_with_mixed_statuses(tasks):
+    assert len(tasks.tasks_by_id) == 1
+
+    # Create one complete and one incomplete task
+    complete_task = Task(
+        id=uuid4(), title="Complete Task", is_complete=True, checkbox=Checkbutton(tasks, text="Complete Task")
+    )
+    incomplete_task = Task(
+        id=uuid4(), title="Incomplete Task", is_complete=False, checkbox=Checkbutton(tasks, text="Incomplete Task")
+    )
+    tasks.tasks_by_id[complete_task.id] = complete_task
+    tasks.tasks_by_id[incomplete_task.id] = incomplete_task
+
+    tasks.clear_completed_tasks()
+
+    # Only the incomplete task should remain
+    assert len(tasks.tasks_by_id) == 2
+    assert incomplete_task.id in tasks.tasks_by_id
+    assert complete_task.id not in tasks.tasks_by_id
