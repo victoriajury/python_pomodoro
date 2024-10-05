@@ -2,7 +2,7 @@
 
 A Pomodoro Timer Application using Python and Tkinter.
 
-This project aims to develop my skills in: OOP, event-driven programming, UI/UX design, testing and validation, software deployment.
+**This project aims to develop my skills in:** OOP, event-driven programming, UI/UX design, testing and validation, software deployment.
 
 **What is the Pomodoro technique?**
 
@@ -52,7 +52,7 @@ Users can add tasks and clear completed tasks, which deletes them.
 
 ## Resources
 
-For information on the project development, see [/dev.md](/dev.md)
+For information on the project development, see [/dev.md](dev.md)
 
 ### Further information
 
