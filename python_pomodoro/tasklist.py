@@ -31,11 +31,7 @@ class TaskList(ttk.Frame):
         self.task_list = ttk.Frame(self, padding=5)
         self.task_list.pack(side="top")
 
-        # Create some test tasks:
-        task1_id = uuid4()
-        self.tasks_by_id: dict[UUID, Task] = {task1_id: Task(id=task1_id, title="Some task")}
-        for _, task in self.tasks_by_id.items():
-            self.create_task_checkbutton(task)
+        self.tasks_by_id: dict[UUID, Task] = {}
 
         self.label_task_input = ttk.Label(self)
         self.entry_task_input = ttk.Entry(self)

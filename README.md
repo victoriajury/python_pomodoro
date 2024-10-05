@@ -1,120 +1,71 @@
-# WIP: python_pomodoro
+# python_pomodoro
+
+![Tests Status](./reports/badges/tests-badge.svg?dummy=8484744)
+![Coverage Status](./reports/badges/coverage-badge.svg?dummy=8484744)
+
 A Pomodoro Timer Application using Python and Tkinter.
 
-This project aims to develop my skills in: OOP, event-driven programming, UI/UX design, testing and validation, software deployment.
+**This project aims to develop my skills in:** OOP, event-driven programming, UI/UX design, testing and validation, software deployment.
 
-### Usage
-To run the application from a terminal
-```
-python -m python_pomodoro.app
-```
-
-###  What is the Pomodoro technique?
+**What is the Pomodoro technique?**
 
 Method of time management to help improve productivity:
+
 - Work for 25 minutes, then take a 5-minute break.
 - After 4 cycles, take a longer break (e.g., 15-30 minutes).
 
-### What will the UI look like?
-Development of this app will incorporate the following features.
+![image](https://github.com/user-attachments/assets/420e6de5-455c-467f-a035-5e2a33739396)
 
-- Simple, user-friendly GUI.
-- Start/Stop/Pause/Reset buttons for timer.
-- Customizable work/break intervals. Sliders to adjust values.
-- Visual or sound alerts at the end of each session. Prompt to continue to next task or work/break session.
-- Task checklist, tasks crossed out after completion.
+## Installation
 
-![Image](https://github.com/user-attachments/assets/ab106b6b-d030-443a-9661-233a161124af)
+### Dependencies
 
-More details on how the UI will work:
-
-![Image](https://github.com/user-attachments/assets/98d5a6dc-b0bf-45d1-8ee7-ecf9e64a0581)
-
-## Project set up
-
-**My local environment is installed on a Fedora Linux laptop.**
-
-### Dependencies:
 - Python 3.11+
 - pip
 - pipenv
 - tkinter
 
-Check Python version:
-```
-$ python --version
-Python 3.12.5
+#### Install pipenv
+
+```bash
+pip install pipenv --user
 ```
 
-### Install tkinter on Fedora Linux
-https://www.geeksforgeeks.org/how-to-install-tkinter-on-linux/
+#### Install venv and dependency packages
 
-For Fedora users, use the following command:
-```
-sudo dnf install python3-tkinter
-```
-Verify installation: a pop-up window opened with two buttons appears, showing the current version of Tkinter installed.
-```
-python -m tkinter
+```bash
+pipenv install
 ```
 
-### Install pip on Fedora Linux
-https://packaging.python.org/en/latest/guides/installing-using-linux-tools/
+## Usage
 
-```
-$ sudo dnf install python3-pip python3-wheel
+To run the application from a terminal
 
-$ pip --version
-pip 23.2.1
+```bash
+python -m python_pomodoro.app
 ```
 
-### Install pipenv 
-https://pipenv.pypa.io/en/latest/index.html
+### Settings
 
-**Rationale:** [Poetry](https://python-poetry.org/) is another Python virtual environment and dependency management tool, however this project is not very big or particularly complex and has minimal dependencies, therefore I have opted to use Pipenv, which I am more familiar with.
+Sliders in the settings panel set the timers and number of cycles.
 
-```
-$ pip install pipenv --user
+### Adding tasks
 
-$ pipenv --version
-pipenv, version 2024.0.1
-```
-
-Create and activate the virtual environment and spawn a shell within it
-```
-pipenv shell
-```
-Install packages
-```
-pipenv install [OPTIONS] [PACKAGES]...
-```
-
-### Run the tests
-
-#### Coverage with Pytest
-```
-$ coverage run -m pytest
-```
-#### View report in terminal
-```
-$ coverage report
-```
-#### Generate reports
-
-This then works with Coverage Gutters VS Code extension to view coverage in module's python files.
-```
-$ coverage xml
-```
+Users can add tasks and clear completed tasks, which deletes them.
 
 ## Resources
 
-### Further information:
-- https://www.pomodorotechnique.com/
-- https://en.wikipedia.org/wiki/Pomodoro_Technique
+For information on the project development, see [/dev.md](dev.md)
 
-### Other similar applications:
+### Further information
+
+- <https://www.pomodorotechnique.com/>
+- <https://en.wikipedia.org/wiki/Pomodoro_Technique>
+
+### Other similar applications
+
 Here are a few Pomodoro apps which I've used for inspiration:
 
-- https://pomofocus.io/
-- https://pomodor.app/timer
-- https://github.com/Splode/pomotroid
+- <https://pomofocus.io/>
+- <https://pomodor.app/timer>
+- <https://github.com/Splode/pomotroid>
