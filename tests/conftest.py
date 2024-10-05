@@ -1,12 +1,13 @@
 import tkinter as tk
 from _tkinter import TclError
-from tkinter import ttk
+from tkinter import ttk, Checkbutton
 from typing import Any
+from uuid import uuid4
 
 import pytest
 from python_pomodoro.app import Pomodoro
 from python_pomodoro.settings import Settings
-from python_pomodoro.tasklist import TaskList
+from python_pomodoro.tasklist import Task, TaskList
 from python_pomodoro.tomato_timer import TomatoTimer
 
 
@@ -42,7 +43,14 @@ def settings(root_window):
 @pytest.fixture
 def tasks(root_window):
     """Fixture to initialize the TaskList object."""
-    return TaskList(parent=root_window, main_window=root_window)
+    task = TaskList(parent=root_window, main_window=root_window)
+
+    # Create a test tasks
+    task1_id = uuid4()
+    title = "Some task"
+    task.tasks_by_id[task1_id] = Task(id=task1_id, title=title, checkbox=Checkbutton(task, text=title))
+
+    return task
 
 
 class TestFunctions:
