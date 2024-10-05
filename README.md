@@ -1,5 +1,8 @@
 # python_pomodoro
 
+![Tests Status](./reports/badges/tests-badge.svg?dummy=8484744)
+![Coverage Status](./reports/badges/coverage-badge.svg?dummy=8484744)
+
 A Pomodoro Timer Application using Python and Tkinter.
 
 **This project aims to develop my skills in:** OOP, event-driven programming, UI/UX design, testing and validation, software deployment.

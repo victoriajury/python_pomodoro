@@ -13,6 +13,7 @@ mypy = "*"
 isort = "*"
 pytest = "*"
 coverage = "*"
+genbadge = {extras = ["all"], version = "*"}
 
 [requires]
 python_version = "3.12"
