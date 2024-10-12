@@ -1,6 +1,6 @@
-from tkinter import ttk
 from unittest.mock import MagicMock, patch
 
+import customtkinter as ctk
 import pytest
 from python_pomodoro.tomato_timer import SessionStatus
 
@@ -21,7 +21,7 @@ def test_tomato_timer_initialization(tomato_timer):
 
 def test_show_start_button(tomato_timer):
     # Mock the grid method to prevent actual layout changes in tests
-    with patch.object(ttk.Button, "grid") as mock_grid:
+    with patch.object(ctk.CTkButton, "grid") as mock_grid:
         tomato_timer.show_start_button()
         # Assert that grid() was called once, meaning the button was shown
         mock_grid.assert_called_once()
@@ -222,18 +222,36 @@ def test_start_next_session_click_no(tomato_timer, status, cycle, expected_statu
 def test_alert_session_ended(tomato_timer, status, cycle, next_session, cycle_msg, title, msg_session):
     with (
         patch("python_pomodoro.tomato_timer.playsound") as mock_playsound,
-        patch("python_pomodoro.tomato_timer.messagebox.askyesno") as mock_messagebox,
+        patch("python_pomodoro.tomato_timer.messagebox") as mock_messagebox,
     ):
         tomato_timer.set_status(status)
         tomato_timer.current_cycle = cycle
 
         message = f"{cycle_msg}Would you like to start the next {msg_session}?"
 
-        tomato_timer.alert_session_ended(next_session)
+        mock_messagebox.return_value.get.return_value = "Yes"
+        response = tomato_timer.alert_session_ended(next_session)
 
         mock_playsound.assert_called_once()
 
-        mock_messagebox.assert_called_once_with(title=title, message=message)
+        mock_messagebox.assert_called_once_with(
+            tomato_timer.main_window,
+            title=title,
+            message=message,
+            icon="question",
+            option_1="Yes",
+            option_2="No",
+            justify="center",
+        )
+
+        mock_messagebox.return_value.get.assert_called_once()
+
+        assert response is True
+
+        mock_messagebox.return_value.get.return_value = "No"
+        response = tomato_timer.alert_session_ended(next_session)
+
+        assert response is False
 
 
 @pytest.mark.parametrize(
@@ -272,7 +290,7 @@ def test_change_session_dropdown_clicked(tomato_timer):
     # Mock the call to change_session_status to isolate reset behavior
     with patch.object(tomato_timer, "change_session_status") as mock_selection:
 
-        tomato_timer.option_menu_session_status.children["!menu"].invoke(0)
+        tomato_timer.option_menu_session_status.children["!dropdownmenu"].invoke(0)
         mock_selection.assert_called_once()
 
 

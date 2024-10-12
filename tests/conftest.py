@@ -1,11 +1,11 @@
 import tkinter as tk
 from _tkinter import TclError
-from tkinter import ttk, Checkbutton
+from tkinter import Checkbutton, ttk
 from typing import Any
 from uuid import uuid4
 
 import pytest
-from python_pomodoro.app import Pomodoro
+from python_pomodoro.app import App
 from python_pomodoro.settings import Settings
 from python_pomodoro.tasklist import Task, TaskList
 from python_pomodoro.tomato_timer import TomatoTimer
@@ -20,9 +20,9 @@ def root_window():
 
 
 @pytest.fixture
-def app(root_window):
+def app():
     """Fixture to initialize the main app object."""
-    return Pomodoro(main_window=root_window)
+    return App()
 
 
 @pytest.fixture

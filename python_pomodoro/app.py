@@ -1,5 +1,6 @@
-import tkinter as tk
-from tkinter import Tk, ttk
+from tkinter import ttk
+
+import customtkinter as ctk
 
 from .settings import Settings
 from .tasklist import TaskList
@@ -12,10 +13,11 @@ necessary modules (e.g., GUI, timer, tasks)
 """
 
 
-class Pomodoro:
-    def __init__(self, main_window: Tk) -> None:
-        self.main_window = main_window
-        self.main_window.title("Pomodoro")
+class App(ctk.CTk):
+    def __init__(self) -> None:
+        super().__init__()
+        self.main_window = self
+        self.title("Pomodoro")
 
         # Content frame
         top_container = ttk.Frame(self.main_window, padding=5, style="Container.TFrame")
@@ -31,7 +33,7 @@ class Pomodoro:
         bottom_container = ttk.Frame(self.main_window, padding=5, style="Container.TFrame")
         bottom_container.pack(side="top", fill="both", expand=True)
 
-        self.settings_button = ttk.Button(bottom_container, text="Settings", command=self.show_settings)
+        self.settings_button = ctk.CTkButton(bottom_container, text="Settings", command=self.show_settings)
         self.settings_button.pack(side="bottom", fill="x")
 
         self.settings = Settings(bottom_container, self.main_window, self.timer, self.settings_button)
@@ -46,9 +48,8 @@ class Pomodoro:
 
 
 def main() -> None:
-    root = tk.Tk()
-    _ = Pomodoro(root)
-    root.mainloop()
+    app = App()
+    app.mainloop()
 
 
 if __name__ == "__main__":

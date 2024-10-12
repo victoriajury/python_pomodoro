@@ -63,7 +63,7 @@ def test_save_new_task_invalid_empty_string(tasks):
 
     task_id = tasks.save_new_task()
 
-    assert tasks.label_task_input["text"] == "Please enter a task..."
+    assert tasks.label_task_input._text == "Please enter a task..."
     assert bool(tasks.label_task_input.pack_info()) is True
     assert task_id is None
     assert len(tasks.tasks_by_id) == 1  # No new task added
@@ -81,7 +81,7 @@ def test_save_new_task_invalid(tasks, text):
     task_id = tasks.save_new_task()
 
     # Ensure the task is not added
-    assert tasks.label_task_input["text"] == "Please enter a valid task name."
+    assert tasks.label_task_input._text == "Please enter a valid task name."
     assert task_id is None
     assert len(tasks.tasks_by_id) == 1  # No new task added
 
@@ -101,7 +101,7 @@ def test_save_invalid_duplicate_tasks(tasks):
     tasks.entry_task_input.insert(0, text)
     task_id_2 = tasks.save_new_task()
 
-    assert tasks.label_task_input["text"] == "Duplicate task name."
+    assert tasks.label_task_input._text == "Duplicate task name."
     assert task_id_2 is None
     assert len(tasks.tasks_by_id) == 2  # No new task added
 
@@ -125,7 +125,7 @@ def test_save_task_with_max_length(tasks):
     tasks.save_new_task()
 
     # Ensure the task title is truncated or properly handled
-    assert tasks.label_task_input["text"] == "Task too long (max 100 chars.)"
+    assert tasks.label_task_input._text == "Task too long (max 100 chars.)"
     assert len(tasks.tasks_by_id) == 1  # No new task added
 
 

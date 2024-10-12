@@ -1,9 +1,11 @@
 import time
 from dataclasses import dataclass
 from enum import Enum
-from tkinter import PhotoImage, StringVar, Tk, messagebox, ttk
+from tkinter import PhotoImage, StringVar, Tk, ttk
 
-from playsound3 import playsound  # type: ignore
+import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox as messagebox
+from playsound3 import playsound
 
 from .helpers import get_image_from_resources
 
@@ -131,29 +133,26 @@ class TomatoTimer(ttk.Frame):
         timer_seconds = ttk.Label(self, textvariable=self.seconds, style="TimerText.TLabel")
         timer_seconds.grid(row=0, column=1, sticky="w", padx=10)
 
-        self.label_cycles = ttk.Label(self, text=f"Cycle: {self.current_cycle} of {self.cycles}")
+        self.label_cycles = ctk.CTkLabel(self, text=f"Cycle: {self.current_cycle} of {self.cycles}")
         self.label_cycles.grid(row=0, column=0, columnspan=2, sticky="s", pady=10)
 
-        self.button_reset = ttk.Button(self, text="Reset", command=self.reset_timer)
+        self.button_reset = ctk.CTkButton(self, text="Reset", command=self.reset_timer)
         self.button_reset.grid(row=1, column=0, sticky="e", padx=5)
 
-        self.button_pause = ttk.Button(self, text="Pause", command=self.pause_timer)
+        self.button_pause = ctk.CTkButton(self, text="Pause", command=self.pause_timer)
         self.button_pause.grid(row=1, column=1, sticky="w", padx=5)
 
-        self.button_start = ttk.Button(self, text="Start", command=self.start_timer)
+        self.button_start = ctk.CTkButton(self, text="Start", command=self.start_timer)
         self.show_start_button()
 
         session_status_list: list[str] = [status.value.title for status in list(SessionStatus)]
         self.list_selection = StringVar()
         self.list_selection.set(self.status.value.title)
-        self.option_menu_session_status = ttk.OptionMenu(
+        self.option_menu_session_status = ctk.CTkOptionMenu(
             self,
-            self.list_selection,
-            self.status.value.title,
-            *session_status_list,
+            values=session_status_list,
             command=lambda x: self.change_session_status(x),
-            style="OptionMenu.TMenubutton",
-            direction="above",
+            variable=self.list_selection
         )
         self.option_menu_session_status.grid(row=2, column=0, columnspan=2, pady=10)
 
@@ -219,7 +218,8 @@ class TomatoTimer(ttk.Frame):
             time.sleep(1) if not testing else time.sleep(0.001)
             self.current_time -= 1
 
-        self.start_next_session()
+        if self.current_time == -1:  # pragma: no cover
+            self.start_next_session()
 
     def pause_timer(self) -> None:
         self.is_paused = True
@@ -266,11 +266,19 @@ class TomatoTimer(ttk.Frame):
             if self.status == SessionStatus.SHORT_BREAK
             else ""
         )
-        response = messagebox.askyesno(
+        msg = messagebox(
+            self.main_window,
             title=f"{self.status.value.title} has ended",
             message=f"{cycle_msg}Would you like to start the next {next_session.value.title.lower()}?",
+            icon="question",
+            option_1="Yes",
+            option_2="No",
+            justify="center",
         )
-        return response
+        response = msg.get()
+        if response == "Yes":
+            return True
+        return False
 
     def change_session_status(self, status_var: StringVar) -> None:
         self.is_paused = True

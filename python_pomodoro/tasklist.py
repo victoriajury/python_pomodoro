@@ -4,6 +4,8 @@ from tkinter import Checkbutton, IntVar, Tk, ttk
 from typing import Optional
 from uuid import UUID, uuid4
 
+import customtkinter as ctk
+
 """
 Handles creation of tasks in tasklist.
 New tasks are created as checkboxes and when completed/checked are coloured grey.
@@ -33,14 +35,14 @@ class TaskList(ttk.Frame):
 
         self.tasks_by_id: dict[UUID, Task] = {}
 
-        self.label_task_input = ttk.Label(self)
+        self.label_task_input = ctk.CTkLabel(self)
         self.entry_task_input = ttk.Entry(self)
 
-        self.button_add_task = ttk.Button(self, text="Add new task", command=self.show_task_entry_input)
+        self.button_add_task = ctk.CTkButton(self, text="Add new task", command=self.show_task_entry_input)
         self.button_add_task.pack(side="bottom")
 
-        self.button_save_task = ttk.Button(self, text="Save task", command=self.save_new_task)
-        self.button_clear_task = ttk.Button(self, text="Clear completed", command=self.clear_completed_tasks)
+        self.button_save_task = ctk.CTkButton(self, text="Save task", command=self.save_new_task)
+        self.button_clear_task = ctk.CTkButton(self, text="Clear completed", command=self.clear_completed_tasks)
         self.show_hide_clear_task_button()
 
     def show_task_entry_input(self, event=None) -> None:
@@ -58,20 +60,20 @@ class TaskList(ttk.Frame):
         error = False
 
         if not len(input_data) > 0:  # no text entered
-            self.label_task_input.configure(text="Please enter a task...", foreground="grey")
+            self.label_task_input.configure(text="Please enter a task...", text_color="grey")
             error = True
         elif not len(input_data) < 100:  # text too long
-            self.label_task_input.configure(text="Task too long (max 100 chars.)", foreground="grey")
+            self.label_task_input.configure(text="Task too long (max 100 chars.)", text_color="grey")
             error = True
         elif all(char in punctuation for char in input_data):  # only punctuation
-            self.label_task_input.configure(text="Please enter a valid task name.", foreground="grey")
+            self.label_task_input.configure(text="Please enter a valid task name.", text_color="grey")
             error = True
         elif all(char.isspace() for char in input_data):  # only whitespaces
-            self.label_task_input.configure(text="Please enter a valid task name.", foreground="grey")
+            self.label_task_input.configure(text="Please enter a valid task name.", text_color="grey")
             error = True
         elif any(task.title for task in self.tasks_by_id.values() if input_data.lower() == task.title.lower()):
             # check for duplicates
-            self.label_task_input.configure(text="Duplicate task name.", foreground="grey")
+            self.label_task_input.configure(text="Duplicate task name.", text_color="grey")
             error = True
 
         if not error:

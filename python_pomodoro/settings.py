@@ -1,5 +1,7 @@
 from tkinter import IntVar, Scale, Tk, ttk
 
+import customtkinter as ctk
+
 from .tomato_timer import DEFAULT_CYCLES, SessionStatus, TomatoTimer
 
 """
@@ -38,11 +40,11 @@ class Settings(ttk.Frame):
 
         self.frame_buttons = ttk.Frame(self)
         self.frame_buttons.grid(row=2, column=0, columnspan=2)
-        self.button_reset = ttk.Button(self.frame_buttons, text="Reset", command=self.reset_slider_defaults)
+        self.button_reset = ctk.CTkButton(self.frame_buttons, text="Reset", command=self.reset_slider_defaults)
         self.button_reset.grid(row=2, column=0, sticky="e", padx=5)
-        self.button_save = ttk.Button(self.frame_buttons, text="Save", command=self.update_settings)
+        self.button_save = ctk.CTkButton(self.frame_buttons, text="Save", command=self.update_settings)
         self.button_save.grid(row=2, column=1, sticky="w", padx=5)
-        self.button_cancel = ttk.Button(self.frame_buttons, text="Cancel", command=self.close_settings)
+        self.button_cancel = ctk.CTkButton(self.frame_buttons, text="Cancel", command=self.close_settings)
         self.button_cancel.grid(row=2, column=2, sticky="w", padx=5)
 
     def reset_slider_defaults(self) -> None:
