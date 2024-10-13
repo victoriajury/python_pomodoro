@@ -1,4 +1,3 @@
-import time
 from dataclasses import dataclass
 from enum import Enum
 from tkinter import PhotoImage, StringVar, ttk
@@ -19,6 +18,7 @@ dataclasses with methods to set the time or reset the defaults.
 """
 
 DEFAULT_CYCLES = 4
+TEST_MODE = False
 
 
 @dataclass
@@ -203,26 +203,32 @@ class TomatoTimer(ctk.CTkFrame):
                 foreground=self.status.value.foreground,
             )
 
-    def start_timer(self, testing: bool = False) -> None:
+    def start_timer(self) -> None:
         self.is_paused = False  # restart timer
         self.button_start.grid_forget()
         self.update_styles()
 
-        # TODO: change this to use  Tkinter.after() - update() and sleep() cause slight jitter when pressing pause
-        # see https://stackoverflow.com/a/74361677
-        while self.current_time > -1 and self.is_paused is not True:
+        self._countdown(self.current_time)
+
+    def _countdown(self, count: int) -> None:
+        # self.main_window.update()
+        self.current_time = count
+
+        if self.current_time > -1 and self.is_paused is not True:
             # divmod(firstvalue = temp//60, secondvalue = temp%60)
-            mins, secs = divmod(self.current_time, 60)
+            mins, secs = divmod(count, 60)
             # set time and pad with zero
             self.minutes.set("{0:02}".format(mins))
             self.seconds.set("{0:02}".format(secs))
-            # updating the GUI window after decrementing the timer 1 second
             self.main_window.title(f"Pomodoro - {self.status.value.title} - {self.minutes.get()}:{self.seconds.get()}")
-            self.main_window.update()
-            time.sleep(1) if not testing else time.sleep(0.001)
-            self.current_time -= 1
+            # Call the countdown function recursively until timer runs out
+            ms = 5 if TEST_MODE else 1000
 
-        if self.current_time == -1:  # pragma: no cover
+            self.main_window.after(ms, self._countdown, count - 1)
+        else:
+            self.is_paused = True
+
+        if self.current_time == -1:
             self.start_next_session()
 
     def pause_timer(self) -> None:
