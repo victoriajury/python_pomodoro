@@ -60,7 +60,7 @@ For information on the project development, see [/dev.md](dev.md)
 
 ### Styles
 
-UI styled with `customtkinter` library:
+UI styled with `customtkinter` library by [TomSchimansky](https://github.com/TomSchimansky):
 
 - <https://customtkinter.tomschimansky.com/>
 
