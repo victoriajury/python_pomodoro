@@ -16,19 +16,21 @@ class App(ctk.CTk):
         super().__init__()
         self.title("Pomodoro")
 
+        ctk.set_default_color_theme("green")
+
         # Content frame
         top_container = ctk.CTkFrame(self, fg_color="transparent")
-        top_container.pack(side="top", fill="both", expand=True, padx=15, pady=15)
+        top_container.pack(side="top", fill="both", expand=True, padx=5, pady=15)
 
         self.timer = TomatoTimer(top_container, self)
-        self.timer.pack(side="left", fill="y")
+        self.timer.pack(side="left", fill="y", padx=7)
 
         tasks = TaskList(top_container, self)
-        tasks.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+        tasks.pack(side="left", fill="both", expand=True, padx=7)
 
         # Settings frame
         bottom_container = ctk.CTkFrame(self, fg_color="transparent")
-        bottom_container.pack(side="top", fill="both", expand=True, padx=5, pady=5)
+        bottom_container.pack(side="top", fill="both", expand=True, padx=10, pady=10)
 
         self.settings_button = ctk.CTkButton(bottom_container, text="Settings", command=self.show_settings)
         self.settings_button.pack(side="bottom", fill="x")

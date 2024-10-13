@@ -1,7 +1,6 @@
 from unittest.mock import patch
 
 import customtkinter as ctk
-# import pytest
 from python_pomodoro.app import main
 
 

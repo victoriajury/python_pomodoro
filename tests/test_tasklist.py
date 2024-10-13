@@ -2,6 +2,7 @@ from tkinter import Checkbutton, IntVar
 from unittest.mock import patch
 from uuid import uuid4
 
+import customtkinter as ctk
 import pytest
 from python_pomodoro.tasklist import Task
 
@@ -160,17 +161,20 @@ def test_create_task_checkbutton(tasks):
 
         tasks.create_task_checkbutton(task)
 
-        task.checkbox.invoke()
+        # task.checkbox.invoke()
+        task.checkbox._command.__call__()
         mock_toggle.assert_called_once()
 
-        assert task.checkbox["text"] == title
+        assert task.checkbox._text == title
 
 
 def test_toggle_task_complete(tasks):
     # Add a new task to the dict tasks_by_id
     id = uuid4()
     title = "Some task title"
-    tasks.tasks_by_id[id] = task = Task(id=id, title=title, is_complete=False, checkbox=Checkbutton(tasks, text=title))
+    tasks.tasks_by_id[id] = task = Task(
+        id=id, title=title, is_complete=False, checkbox=ctk.CTkCheckBox(tasks, text=title)
+    )
 
     assert len(tasks.tasks_by_id) == 2
 

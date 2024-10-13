@@ -1,5 +1,5 @@
 from _tkinter import TclError
-from tkinter import Checkbutton, ttk
+from tkinter import ttk
 from typing import Any
 from uuid import uuid4
 
@@ -48,7 +48,7 @@ def tasks(root_window):
     # Create a test tasks
     task1_id = uuid4()
     title = "Some task"
-    task.tasks_by_id[task1_id] = Task(id=task1_id, title=title, checkbox=Checkbutton(task, text=title))
+    task.tasks_by_id[task1_id] = Task(id=task1_id, title=title, checkbox=ctk.CTkCheckBox(task, text=title))
 
     return task
 

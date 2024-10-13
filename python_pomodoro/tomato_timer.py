@@ -126,7 +126,7 @@ class TomatoTimer(ctk.CTkFrame):
             font=("", 40, "bold"),
             compound="center",
         )
-        self.timer_background.grid(row=0, column=0, columnspan=2, padx=10, pady=20)
+        self.timer_background.grid(row=0, column=0, columnspan=2, padx=10, pady=15)
 
         timer_minutes = ttk.Label(self, textvariable=self.minutes, style="TimerText.TLabel")
         timer_minutes.grid(row=0, column=0, sticky="e", padx=10)
