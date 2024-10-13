@@ -1,8 +1,10 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import customtkinter as ctk
 import pytest
 from python_pomodoro.tomato_timer import SessionStatus
+
+TEST_MODE = True
 
 
 def test_tomato_timer_initialization(tomato_timer):
@@ -49,23 +51,42 @@ def test_reset_timer(tomato_timer):
 
 
 def test_start_timer(tomato_timer):
-    with (
-        patch.object(tomato_timer, "main_window", create=True) as mock_main_window,
-        patch.object(tomato_timer, "start_next_session") as mock_start_next_session,
-    ):
-        mock_main_window.update = MagicMock()
-
-        # Set timer to 1 minute to speed up test
-        tomato_timer.status.value.set_time(1)
-        tomato_timer.set_session_time()
-
-        tomato_timer.start_timer(testing=True)
-        assert tomato_timer.current_time == -1
-        mock_start_next_session.assert_called_once()
+    with patch.object(tomato_timer, "_countdown") as mock_countdown:
+        tomato_timer.start_timer()
+        # Assert the countdown method was called, meaning the timer started ticking
+        mock_countdown.assert_called_once()
 
         # Ensure that the timer starts and styles are updated
         assert tomato_timer.is_paused is False
         assert not bool(tomato_timer.button_start.grid_info())  # Button should be hidden after start
+
+
+def test_timer_starts_countdown(tomato_timer):
+    with patch.object(tomato_timer.main_window, "after") as mock_after:
+        tomato_timer.start_timer()
+
+        # Assert the after method was called, meaning the timer started ticking
+        mock_after.assert_called_once()
+
+        # Ensure that the timer is not paused
+        assert tomato_timer.is_paused is False
+
+
+def test_timer_ends_countdown(tomato_timer):
+    with (
+        patch.object(tomato_timer, "start_next_session") as mock_start_next_session
+    ):
+        # Set timer to -1 seconds
+        tomato_timer.status.value.set_time(0)
+        tomato_timer.status.value.time.seconds = -1
+        tomato_timer.set_session_time()
+
+        ct = tomato_timer.current_time
+        assert ct == -1
+        tomato_timer._countdown(ct)
+
+        mock_start_next_session.assert_called_once()
+        assert tomato_timer.is_paused is True
 
 
 def test_pause_timer(tomato_timer):
@@ -106,7 +127,7 @@ def test_pause_at_zero(tomato_timer):
 
 def test_pause_midway(tomato_timer):
     # Test: Pausing the timer midway through a session
-    with patch("python_pomodoro.tomato_timer.time.sleep"):
+    with patch.object(tomato_timer, "_countdown"):
         # Start the timer and simulate it running halfway
         tomato_timer.minutes.set("12")
         tomato_timer.seconds.set("30")
@@ -292,18 +313,3 @@ def test_change_session_dropdown_clicked(tomato_timer):
 
         tomato_timer.option_menu_session_status.children["!dropdownmenu"].invoke(0)
         mock_selection.assert_called_once()
-
-
-"""
-# TODO: Test when timer use after() instead of sleep()
-
-def test_timer_starts_countdown(tomato_timer):
-    with patch.object(tomato_timer.main_window, "after") as mock_after:
-        tomato_timer.start_timer()
-
-        # Assert the after method was called, meaning the timer started ticking
-        mock_after.assert_called_once()
-
-        # Ensure that the timer is not paused
-        assert tomato_timer.is_paused is False
-"""
