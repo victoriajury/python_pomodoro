@@ -14,7 +14,8 @@ Method of time management to help improve productivity:
 - Work for 25 minutes, then take a 5-minute break.
 - After 4 cycles, take a longer break (e.g., 15-30 minutes).
 
-![image](https://github.com/user-attachments/assets/420e6de5-455c-467f-a035-5e2a33739396)
+![Image](https://github.com/user-attachments/assets/09c780f8-f094-4d17-9ba0-c1a9c576fcf0)
+![Image](https://github.com/user-attachments/assets/6e2631df-809a-4b10-a0f3-2189cd3f83d4)
 
 ## Installation
 
