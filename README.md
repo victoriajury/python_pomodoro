@@ -58,6 +58,16 @@ Users can add tasks and clear completed tasks, which deletes them.
 
 For information on the project development, see [/dev.md](dev.md)
 
+### Styles
+
+UI styled with `customtkinter` library:
+
+- <https://customtkinter.tomschimansky.com/>
+
+Add-ons:
+
+- <https://github.com/Akascape/CTkMessagebox>
+
 ### Further information
 
 - <https://www.pomodorotechnique.com/>
