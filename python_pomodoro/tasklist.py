@@ -34,7 +34,7 @@ class TaskList(ctk.CTkFrame):
         self.tasks_by_id: dict[UUID, Task] = {}
 
         self.label_task_input = ctk.CTkLabel(self)
-        self.entry_task_input = ttk.Entry(self)
+        self.entry_task_input = ttk.Entry(self, width=27)
 
         self.button_add_task = ctk.CTkButton(self, text="Add new task", command=self.show_task_entry_input)
         self.button_add_task.pack(side="bottom", pady=15)
@@ -110,7 +110,6 @@ class TaskList(ctk.CTkFrame):
             self.task_list,
             text=task.title,
             variable=is_complete,
-            # wraplength=180,  # Attribute doesn't exist on ctk
             command=lambda: self.toggle_task_complete(task, is_complete),
             onvalue=1,
             offvalue=0,
@@ -118,6 +117,8 @@ class TaskList(ctk.CTkFrame):
             border_width=2,
             border_color=("#2CC985", "#2FA572"),
         )
+        checkbox._text_label.configure(wraplength=180)
+
         task.checkbox = checkbox
         self.task_list.pack(side="top", pady=5)
         checkbox.pack(anchor="w", pady=5)

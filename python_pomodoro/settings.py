@@ -1,4 +1,4 @@
-from tkinter import IntVar, Scale, Tk, ttk
+from tkinter import IntVar, Tk, ttk
 
 import customtkinter as ctk
 
@@ -13,9 +13,10 @@ Lastly the Settings frame is hidden and the main window resized.
 """
 
 
-class Settings(ttk.Frame):
+class Settings(ctk.CTkFrame):
     def __init__(self, parent: ttk.Frame, main_window: Tk, timer: TomatoTimer, controller: ttk.Button) -> None:
-        ttk.Frame.__init__(self, parent)
+        ctk.CTkFrame.__init__(self, master=parent)
+        self.configure(fg_color="transparent")
         self.main_window = main_window
         self.timer = timer
         self.button = controller
@@ -38,14 +39,14 @@ class Settings(ttk.Frame):
         )
         self.setting_long_break.grid(row=1, column=1, padx=15, pady=10)
 
-        self.frame_buttons = ttk.Frame(self)
+        self.frame_buttons = ctk.CTkFrame(self, fg_color="transparent")
         self.frame_buttons.grid(row=2, column=0, columnspan=2)
         self.button_reset = ctk.CTkButton(self.frame_buttons, text="Reset", command=self.reset_slider_defaults)
-        self.button_reset.grid(row=2, column=0, sticky="e", padx=5)
+        self.button_reset.grid(row=2, column=0, sticky="e", padx=5, pady=10)
         self.button_save = ctk.CTkButton(self.frame_buttons, text="Save", command=self.update_settings)
-        self.button_save.grid(row=2, column=1, sticky="w", padx=5)
+        self.button_save.grid(row=2, column=1, sticky="w", padx=5, pady=10)
         self.button_cancel = ctk.CTkButton(self.frame_buttons, text="Cancel", command=self.close_settings)
-        self.button_cancel.grid(row=2, column=2, sticky="w", padx=5)
+        self.button_cancel.grid(row=2, column=2, sticky="w", padx=5, pady=10)
 
     def reset_slider_defaults(self) -> None:
         self.setting_focus_time.set_slider_value(SessionStatus.FOCUS.value.default_time.minutes)
@@ -82,7 +83,7 @@ class Settings(ttk.Frame):
             self.setting_cycles.set_slider_value(self.timer.get_cycles())
 
         self.pack_forget()
-        self.button.pack(side="bottom", fill="x")
+        self.button.pack(side="bottom", fill="x", padx=10, pady=10)
         self.resize_window()
 
     def setting_changes_cancelled(self, slider: str, session: SessionStatus) -> None:
@@ -95,28 +96,48 @@ class Settings(ttk.Frame):
         self.main_window.maxsize(600, 538)
 
 
-class SettingSlider(ttk.Frame):
+class SettingSlider(ctk.CTkFrame):
     def __init__(self, parent: ttk.Frame, label_text: str, min_value: int, max_value: int, default_value: int) -> None:
-        ttk.Frame.__init__(self, parent)
+        ctk.CTkFrame.__init__(self, master=parent)
+        self.configure(fg_color="transparent")
+        self.label_text = label_text
         self.value = IntVar()
+        self.min_value = min_value
+        self.max_value = max_value
 
         self.value.set(default_value)
 
-        self.slider_name_label = ttk.Label(self, text=label_text)
-        self.slider_name_label.grid(row=1, column=0, pady=3)
+        self.slider_name_label = ctk.CTkLabel(
+            self, text=f"{self.label_text}:  {int(self.value.get())}", justify="left", anchor="w"
+        )
+        self.slider_name_label.pack(side="top", fill="x", padx=5, pady=2)
 
-        self.slider = Scale(
+        self.slider = ctk.CTkSlider(
             self,
             variable=self.value,
-            length=200,
-            from_=min_value,
-            to=max_value,
-            orient="horizontal",
+            width=260,
+            from_=self.min_value,
+            to=self.max_value,
+            orientation="horizontal",
+            command=self.update_label,
+            number_of_steps=(max_value - min_value),
         )
-        self.slider.grid(row=0, column=0)
+        self.slider.pack(
+            side="left",
+            pady=10,
+        )
 
     def set_slider_value(self, value: int) -> None:
-        self.value.set(value)
+        # Ensure slider value does not exceed min or max values
+        if value < self.min_value:
+            self.value.set(self.min_value)
+        elif value > self.max_value:
+            self.value.set(self.max_value)
+        else:
+            self.value.set(value)
 
     def get_slider_value(self) -> int:
         return self.value.get()
+
+    def update_label(self, value) -> None:
+        self.slider_name_label.configure(text=f"{self.label_text}:  {int(value)}")

@@ -29,11 +29,13 @@ class App(ctk.CTk):
         tasks.pack(side="left", fill="both", expand=True, padx=7)
 
         # Settings frame
-        bottom_container = ctk.CTkFrame(self, fg_color="transparent")
-        bottom_container.pack(side="top", fill="both", expand=True, padx=10, pady=10)
+        bottom_container = ctk.CTkFrame(self, corner_radius=0)
+        bottom_container.pack(side="top", fill="both")
 
-        self.settings_button = ctk.CTkButton(bottom_container, text="Settings", command=self.show_settings)
-        self.settings_button.pack(side="bottom", fill="x")
+        self.settings_button = ctk.CTkButton(
+            bottom_container, text="Settings", command=self.show_settings, height=42, fg_color=("gray60", "gray")
+        )
+        self.settings_button.pack(side="bottom", fill="x", padx=10, pady=10)
 
         self.settings = Settings(bottom_container, self, self.timer, self.settings_button)
         self.settings.resize_window()  # defines initial window dimensions
@@ -43,7 +45,7 @@ class App(ctk.CTk):
         self.settings_button.pack_forget()
         self.minsize(600, 700)
         self.maxsize(600, 700)
-        self.settings.pack(side="top", fill="y")
+        self.settings.pack(side="top", fill="both", padx=10, pady=10)
 
 
 def main() -> None:

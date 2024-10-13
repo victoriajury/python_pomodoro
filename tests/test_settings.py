@@ -80,6 +80,9 @@ def test_close_settings(settings, test_functions):
 
 def test_slider_min_max_boundaries():
     slider = SettingSlider(parent=None, label_text="Focus time", min_value=5, max_value=60, default_value=25)
+    # Test setting within boundaries
+    slider.set_slider_value(13)
+    assert slider.get_slider_value() == 13
 
     # Test setting below the minimum
     slider.set_slider_value(3)
@@ -88,3 +91,15 @@ def test_slider_min_max_boundaries():
     # Test setting above the maximum
     slider.set_slider_value(70)
     assert slider.get_slider_value() == 60  # Ensure it is clamped to the max value
+
+
+def test_update_label(settings):
+    slider = settings.setting_focus_time
+
+    # Assert label set with default value:
+    assert slider.slider_name_label._text == "Focus time:  25"
+
+    slider.slider._command(17)
+
+    # Assert label updated:
+    assert slider.slider_name_label._text == "Focus time:  17"
