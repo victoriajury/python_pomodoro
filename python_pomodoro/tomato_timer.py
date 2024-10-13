@@ -1,9 +1,11 @@
 import time
 from dataclasses import dataclass
 from enum import Enum
-from tkinter import PhotoImage, StringVar, Tk, messagebox, ttk
+from tkinter import PhotoImage, StringVar, ttk
 
-from playsound3 import playsound  # type: ignore
+import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox as messagebox
+from playsound3 import playsound
 
 from .helpers import get_image_from_resources
 
@@ -80,9 +82,9 @@ class SessionStatus(Enum):
     )
 
 
-class TomatoTimer(ttk.Frame):
-    def __init__(self, parent: ttk.Frame, main_window: Tk) -> None:
-        ttk.Frame.__init__(self, parent)
+class TomatoTimer(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, main_window: ctk.CTk) -> None:
+        ctk.CTkFrame.__init__(self, master=parent)
         self.main_window = main_window
 
         # DEFAULT STATUS & TIMES
@@ -96,6 +98,9 @@ class TomatoTimer(ttk.Frame):
             s.value.set_time_to_default()
 
         # APPEARANCE & STYLES
+
+        # TODO Should be using ctk.CTkImage, but the master attribute is missing. Fails tests as image is destroyed.
+        # https://github.com/TomSchimansky/CustomTkinter/discussions/2543
         self.bg_images: dict[SessionStatus, PhotoImage] = {
             status: PhotoImage(file=get_image_from_resources(status.value.image), master=self)
             for status in SessionStatus
@@ -105,7 +110,6 @@ class TomatoTimer(ttk.Frame):
             for status in SessionStatus
         }
         self.styles = ttk.Style(self)
-        self.styles.configure("TimerImage.TLabel", font=("", 40, "bold"), justify="center")
         self.styles.configure(
             "TimerText.TLabel",
             font=("", 45, "bold"),
@@ -114,16 +118,15 @@ class TomatoTimer(ttk.Frame):
         self.styles.configure("OptionMenu.TMenubutton", width=16)
 
         # TIMER GUI COMPONENTS
-        self.timer_background = ttk.Label(
+        self.timer_background = ctk.CTkLabel(
             # contains background tomato image and colon seperator ie M:S
             self,
             text=":",
             image=self.bg_images[self.status],
-            padding=15,
+            font=("", 40, "bold"),
             compound="center",
-            style="TimerImage.TLabel",
         )
-        self.timer_background.grid(row=0, column=0, columnspan=2)
+        self.timer_background.grid(row=0, column=0, columnspan=2, padx=10, pady=15)
 
         timer_minutes = ttk.Label(self, textvariable=self.minutes, style="TimerText.TLabel")
         timer_minutes.grid(row=0, column=0, sticky="e", padx=10)
@@ -131,37 +134,35 @@ class TomatoTimer(ttk.Frame):
         timer_seconds = ttk.Label(self, textvariable=self.seconds, style="TimerText.TLabel")
         timer_seconds.grid(row=0, column=1, sticky="w", padx=10)
 
-        self.label_cycles = ttk.Label(self, text=f"Cycle: {self.current_cycle} of {self.cycles}")
+        self.label_cycles = ctk.CTkLabel(self, text=f"Cycle: {self.current_cycle} of {self.cycles}")
         self.label_cycles.grid(row=0, column=0, columnspan=2, sticky="s", pady=10)
 
-        self.button_reset = ttk.Button(self, text="Reset", command=self.reset_timer)
-        self.button_reset.grid(row=1, column=0, sticky="e", padx=5)
+        self.button_reset = ctk.CTkButton(self, text="Reset", command=self.reset_timer)
+        self.button_reset.grid(row=1, column=0, sticky="e", padx=5, pady=10)
 
-        self.button_pause = ttk.Button(self, text="Pause", command=self.pause_timer)
-        self.button_pause.grid(row=1, column=1, sticky="w", padx=5)
+        self.button_pause = ctk.CTkButton(self, text="Pause", command=self.pause_timer)
+        self.button_pause.grid(row=1, column=1, sticky="w", padx=5, pady=10)
 
-        self.button_start = ttk.Button(self, text="Start", command=self.start_timer)
+        self.button_start = ctk.CTkButton(self, text="Start", command=self.start_timer)
         self.show_start_button()
 
         session_status_list: list[str] = [status.value.title for status in list(SessionStatus)]
         self.list_selection = StringVar()
         self.list_selection.set(self.status.value.title)
-        self.option_menu_session_status = ttk.OptionMenu(
+        self.option_menu_session_status = ctk.CTkOptionMenu(
             self,
-            self.list_selection,
-            self.status.value.title,
-            *session_status_list,
+            values=session_status_list,
             command=lambda x: self.change_session_status(x),
-            style="OptionMenu.TMenubutton",
-            direction="above",
+            variable=self.list_selection,
+            width=290,
         )
-        self.option_menu_session_status.grid(row=2, column=0, columnspan=2, pady=10)
+        self.option_menu_session_status.grid(row=2, column=0, columnspan=2)
 
         self.set_session_time()
         self.update_styles()
 
     def show_start_button(self) -> None:
-        self.button_start.grid(row=1, column=1, sticky="w", padx=5)
+        self.button_start.grid(row=1, column=1, sticky="w", padx=5, pady=10)
 
     def set_cycles(self, cycles: int) -> None:
         self.cycles = cycles
@@ -184,7 +185,9 @@ class TomatoTimer(ttk.Frame):
 
     def update_styles(self, reset: bool = False) -> None:
         if self.is_paused and reset is False:
-            self.timer_background.configure(image=self.bg_images_paused[self.status])
+            self.timer_background.configure(
+                image=self.bg_images_paused[self.status], text_color=self.status.value.foreground_paused
+            )
             self.styles.configure("TimerImage.TLabel", foreground=self.status.value.foreground_paused)
             self.styles.configure(
                 "TimerText.TLabel",
@@ -192,7 +195,7 @@ class TomatoTimer(ttk.Frame):
                 foreground=self.status.value.foreground_paused,
             )
         else:
-            self.timer_background.configure(image=self.bg_images[self.status])
+            self.timer_background.configure(image=self.bg_images[self.status], text_color=self.status.value.foreground)
             self.styles.configure("TimerImage.TLabel", foreground=self.status.value.foreground)
             self.styles.configure(
                 "TimerText.TLabel",
@@ -219,7 +222,8 @@ class TomatoTimer(ttk.Frame):
             time.sleep(1) if not testing else time.sleep(0.001)
             self.current_time -= 1
 
-        self.start_next_session()
+        if self.current_time == -1:  # pragma: no cover
+            self.start_next_session()
 
     def pause_timer(self) -> None:
         self.is_paused = True
@@ -266,11 +270,19 @@ class TomatoTimer(ttk.Frame):
             if self.status == SessionStatus.SHORT_BREAK
             else ""
         )
-        response = messagebox.askyesno(
+        msg = messagebox(
+            self.main_window,
             title=f"{self.status.value.title} has ended",
             message=f"{cycle_msg}Would you like to start the next {next_session.value.title.lower()}?",
+            icon="question",
+            option_1="Yes",
+            option_2="No",
+            justify="center",
         )
-        return response
+        response = msg.get()
+        if response == "Yes":
+            return True
+        return False
 
     def change_session_status(self, status_var: StringVar) -> None:
         self.is_paused = True

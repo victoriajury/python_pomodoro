@@ -2,6 +2,7 @@ from tkinter import Checkbutton, IntVar
 from unittest.mock import patch
 from uuid import uuid4
 
+import customtkinter as ctk
 import pytest
 from python_pomodoro.tasklist import Task
 
@@ -63,7 +64,7 @@ def test_save_new_task_invalid_empty_string(tasks):
 
     task_id = tasks.save_new_task()
 
-    assert tasks.label_task_input["text"] == "Please enter a task..."
+    assert tasks.label_task_input._text == "Please enter a task..."
     assert bool(tasks.label_task_input.pack_info()) is True
     assert task_id is None
     assert len(tasks.tasks_by_id) == 1  # No new task added
@@ -81,7 +82,7 @@ def test_save_new_task_invalid(tasks, text):
     task_id = tasks.save_new_task()
 
     # Ensure the task is not added
-    assert tasks.label_task_input["text"] == "Please enter a valid task name."
+    assert tasks.label_task_input._text == "Please enter a valid task name."
     assert task_id is None
     assert len(tasks.tasks_by_id) == 1  # No new task added
 
@@ -101,7 +102,7 @@ def test_save_invalid_duplicate_tasks(tasks):
     tasks.entry_task_input.insert(0, text)
     task_id_2 = tasks.save_new_task()
 
-    assert tasks.label_task_input["text"] == "Duplicate task name."
+    assert tasks.label_task_input._text == "Duplicate task name."
     assert task_id_2 is None
     assert len(tasks.tasks_by_id) == 2  # No new task added
 
@@ -125,7 +126,7 @@ def test_save_task_with_max_length(tasks):
     tasks.save_new_task()
 
     # Ensure the task title is truncated or properly handled
-    assert tasks.label_task_input["text"] == "Task too long (max 100 chars.)"
+    assert tasks.label_task_input._text == "Task too long (max 100 chars.)"
     assert len(tasks.tasks_by_id) == 1  # No new task added
 
 
@@ -160,17 +161,20 @@ def test_create_task_checkbutton(tasks):
 
         tasks.create_task_checkbutton(task)
 
-        task.checkbox.invoke()
+        # task.checkbox.invoke()
+        task.checkbox._command.__call__()
         mock_toggle.assert_called_once()
 
-        assert task.checkbox["text"] == title
+        assert task.checkbox._text == title
 
 
 def test_toggle_task_complete(tasks):
     # Add a new task to the dict tasks_by_id
     id = uuid4()
     title = "Some task title"
-    tasks.tasks_by_id[id] = task = Task(id=id, title=title, is_complete=False, checkbox=Checkbutton(tasks, text=title))
+    tasks.tasks_by_id[id] = task = Task(
+        id=id, title=title, is_complete=False, checkbox=ctk.CTkCheckBox(tasks, text=title)
+    )
 
     assert len(tasks.tasks_by_id) == 2
 

@@ -1,11 +1,11 @@
-import tkinter as tk
 from _tkinter import TclError
-from tkinter import ttk, Checkbutton
+from tkinter import ttk
 from typing import Any
 from uuid import uuid4
 
+import customtkinter as ctk
 import pytest
-from python_pomodoro.app import Pomodoro
+from python_pomodoro.app import App
 from python_pomodoro.settings import Settings
 from python_pomodoro.tasklist import Task, TaskList
 from python_pomodoro.tomato_timer import TomatoTimer
@@ -14,15 +14,15 @@ from python_pomodoro.tomato_timer import TomatoTimer
 @pytest.fixture
 def root_window():
     """Fixture to create a root window for the tests."""
-    root = tk.Tk()
+    root = ctk.CTk()
     yield root
     root.destroy()
 
 
 @pytest.fixture
-def app(root_window):
+def app():
     """Fixture to initialize the main app object."""
-    return Pomodoro(main_window=root_window)
+    return App()
 
 
 @pytest.fixture
@@ -48,7 +48,7 @@ def tasks(root_window):
     # Create a test tasks
     task1_id = uuid4()
     title = "Some task"
-    task.tasks_by_id[task1_id] = Task(id=task1_id, title=title, checkbox=Checkbutton(task, text=title))
+    task.tasks_by_id[task1_id] = Task(id=task1_id, title=title, checkbox=ctk.CTkCheckBox(task, text=title))
 
     return task
 
