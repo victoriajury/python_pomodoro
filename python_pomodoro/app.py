@@ -1,5 +1,3 @@
-from tkinter import ttk
-
 import customtkinter as ctk
 
 from .settings import Settings
@@ -16,34 +14,33 @@ necessary modules (e.g., GUI, timer, tasks)
 class App(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
-        self.main_window = self
         self.title("Pomodoro")
 
         # Content frame
-        top_container = ttk.Frame(self.main_window, padding=5, style="Container.TFrame")
-        top_container.pack(side="top", fill="both", expand=True)
+        top_container = ctk.CTkFrame(self, fg_color="transparent")
+        top_container.pack(side="top", fill="both", expand=True, padx=15, pady=15)
 
-        self.timer = TomatoTimer(top_container, self.main_window)
+        self.timer = TomatoTimer(top_container, self)
         self.timer.pack(side="left", fill="y")
 
-        tasks = TaskList(top_container, self.main_window)
+        tasks = TaskList(top_container, self)
         tasks.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
         # Settings frame
-        bottom_container = ttk.Frame(self.main_window, padding=5, style="Container.TFrame")
-        bottom_container.pack(side="top", fill="both", expand=True)
+        bottom_container = ctk.CTkFrame(self, fg_color="transparent")
+        bottom_container.pack(side="top", fill="both", expand=True, padx=5, pady=5)
 
         self.settings_button = ctk.CTkButton(bottom_container, text="Settings", command=self.show_settings)
         self.settings_button.pack(side="bottom", fill="x")
 
-        self.settings = Settings(bottom_container, self.main_window, self.timer, self.settings_button)
+        self.settings = Settings(bottom_container, self, self.timer, self.settings_button)
         self.settings.resize_window()  # defines initial window dimensions
 
     def show_settings(self) -> None:
         # expand window to show settings
         self.settings_button.pack_forget()
-        self.main_window.minsize(600, 700)
-        self.main_window.maxsize(600, 700)
+        self.minsize(600, 700)
+        self.maxsize(600, 700)
         self.settings.pack(side="top", fill="y")
 
 

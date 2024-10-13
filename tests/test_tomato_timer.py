@@ -138,16 +138,16 @@ def test_set_status(tomato_timer, status, expected):
 def test_update_styles(tomato_timer):
     # get the current status background image
     active_status_image = tomato_timer.bg_images[tomato_timer.status]
-    timer_image = tomato_timer.timer_background["image"][0]
+    timer_image = tomato_timer.timer_background._image
 
-    assert timer_image == active_status_image.name
+    assert timer_image.name == active_status_image.name
 
     tomato_timer.pause_timer()
 
     paused_status_image = tomato_timer.bg_images_paused[tomato_timer.status]
-    timer_image = tomato_timer.timer_background["image"][0]
+    timer_image = tomato_timer.timer_background._image
 
-    assert timer_image == paused_status_image.name
+    assert timer_image.name == paused_status_image.name
 
 
 @pytest.mark.parametrize(

@@ -1,9 +1,9 @@
-import tkinter as tk
 from _tkinter import TclError
 from tkinter import Checkbutton, ttk
 from typing import Any
 from uuid import uuid4
 
+import customtkinter as ctk
 import pytest
 from python_pomodoro.app import App
 from python_pomodoro.settings import Settings
@@ -14,7 +14,7 @@ from python_pomodoro.tomato_timer import TomatoTimer
 @pytest.fixture
 def root_window():
     """Fixture to create a root window for the tests."""
-    root = tk.Tk()
+    root = ctk.CTk()
     yield root
     root.destroy()
 
