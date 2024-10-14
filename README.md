@@ -15,7 +15,8 @@ Method of time management to help improve productivity:
 - After 4 cycles, take a longer break (e.g., 15-30 minutes).
 
 ![Image](https://github.com/user-attachments/assets/09c780f8-f094-4d17-9ba0-c1a9c576fcf0)
-![Image](https://github.com/user-attachments/assets/6e2631df-809a-4b10-a0f3-2189cd3f83d4)
+
+![Image](https://github.com/user-attachments/assets/8654a671-df7a-4677-9d4c-32557557d01a)
 
 ## Installation
 

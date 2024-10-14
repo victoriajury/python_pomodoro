@@ -4,6 +4,7 @@ from python_pomodoro.tomato_timer import DEFAULT_CYCLES, SessionStatus
 
 
 def test_settings_initialization(settings):
+    # TODO
     pass
 
 

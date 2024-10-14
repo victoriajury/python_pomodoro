@@ -39,10 +39,10 @@ class Session:
     foreground_paused: str
     background_paused: str
 
-    def set_time(self, minutes: int):
+    def set_time(self, minutes: int) -> None:
         self.time = Time(minutes=minutes, seconds=0)
 
-    def set_time_to_default(self):
+    def set_time_to_default(self) -> None:
         self.time = self.default_time
 
 
